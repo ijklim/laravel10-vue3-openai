@@ -31,7 +31,21 @@ php artisan ui vue
 
 # Install Javascript modules
 yarn install
+
+# Install or upgrade libraries
+yarn add -D vue vue-router axios
+
+# Start server
+php artisan serve
+yarn dev
 ```
+
+## Important Files and Folders
+
+* Laravel Entry Point: `resources/views/welcome.blade.php`
+* Vue Entry Point: `resources/js/app.js`
+* Vue components: `resources/js/components/`
+* Vue routes: `resources/js/router/`
 
 ## References
 

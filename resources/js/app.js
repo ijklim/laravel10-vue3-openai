@@ -12,11 +12,16 @@ import { createApp } from 'vue';
  * registering components with the application instance so they are ready
  * to use in your application's views. An example is included for you.
  */
+// Root component
+import App from '@/App.vue'
+const app = createApp(App);
 
-const app = createApp({});
+// Add Routing
+import router from '@/router/index.js'
+app.use(router);
 
-import ExampleComponent from './components/ExampleComponent.vue';
-app.component('example-component', ExampleComponent);
+// import ExampleComponent from './components/ExampleComponent.vue';
+// app.component('example-component', ExampleComponent);
 
 /**
  * The following block of code may be used to automatically register your
