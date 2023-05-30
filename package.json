@@ -15,5 +15,8 @@
         "vite": "^4.0.0",
         "vue": "^3.3.4",
         "vue-router": "^4.2.1"
+    },
+    "dependencies": {
+        "openai": "^3.2.1"
     }
 }

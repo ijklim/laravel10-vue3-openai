@@ -1,4 +1,4 @@
-# Laravel 10, Vite 4
+# Laravel 10, Vite 4, OpenAI
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
 
@@ -34,6 +34,7 @@ yarn install
 
 # Install or upgrade libraries
 yarn add -D vue vue-router axios
+yarn add openai
 
 # Start server
 php artisan serve
@@ -50,3 +51,5 @@ yarn dev
 ## References
 
 * Laravel 10 Application with Vue 3 https://medium.com/@laraveltuts/laravel-10-application-with-vue-3-complete-guide-to-crud-operations-3705f9a7cb22
+
+* OpenAI API doc: https://platform.openai.com/docs/api-reference
