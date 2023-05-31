@@ -6,22 +6,40 @@ use Illuminate\Http\Request;
 
 class OpenAIController extends Controller
 {
-    /**
-     * Establish connection to OpenAI server
-     *
-     * @param string $endPoint e.g. models/davinci
-     * @param array $parameters
-     */
-    public static function request($endPoint, $parameters = [])
-    {
-        $host = 'https://api.openai.com/v1';
-        $url = "$host/$endPoint";
+    public static $host = 'https://api.openai.com/v1';
 
-        // Send request to remote api and retrieve json data
-        $request = \Illuminate\Support\Facades\Http
+    /**
+     * Create Http object with connection to OpenAI server
+     */
+    public static function connect()
+    {
+        return \Illuminate\Support\Facades\Http
             ::withToken(env('OPENAI_API_KEY', ''))
             ->acceptJson();
+    }
 
-        return count($parameters) ? $request->post($url, $parameters) : $request->get($url);
+    /**
+     * Make a get request to OpenAI server
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @param  string  $slug
+     */
+    public static function get(Request $request, $slug)
+    {
+        $url = static::$host . "/$slug";
+
+        return self::connect()->get($url);
+    }
+
+    /**
+     * Make a post request to OpenAI server
+     *
+     * @param  \Illuminate\Http\Request $request
+     */
+    public static function post(Request $request)
+    {
+        $url = static::$host . '/' . $request['endPoint'];
+
+        return self::connect()->post($url, $request['parameters']);
     }
 }
