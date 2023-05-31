@@ -13,6 +13,7 @@ class OpenAIController extends Controller
      */
     public static function connect()
     {
+        // HTTP Client doc: https://laravel.com/docs/10.x/http-client
         return \Illuminate\Support\Facades\Http
             ::withToken(env('OPENAI_API_KEY', ''))
             ->acceptJson();

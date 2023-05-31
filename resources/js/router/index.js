@@ -6,7 +6,7 @@ const routes = [
   // Doc: https://router.vuejs.org/api/interfaces/routelocation.html
   {
     path: '/',
-    component: () => import('@/components/ExampleComponent.vue'),
+    component: () => import('@/components/Main.vue'),
   },
 ];
 

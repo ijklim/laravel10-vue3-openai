@@ -13,11 +13,11 @@ import { createApp } from 'vue';
  * to use in your application's views. An example is included for you.
  */
 // Root component
-import App from '@/App.vue'
+import App from '@/App.vue';
 const app = createApp(App);
 
 // Add Routing
-import router from '@/router/index.js'
+import router from '@/router/index.js';
 app.use(router);
 
 // import ExampleComponent from './components/ExampleComponent.vue';
@@ -40,5 +40,22 @@ app.use(router);
  * an "id" attribute of "app". This element is included with the "auth"
  * scaffolding. Otherwise, you will need to add an element yourself.
  */
+
+// Vuetify, doc: https://vuetifyjs.com/en/getting-started/installation/
+import 'vuetify/styles';
+import { createVuetify } from 'vuetify';
+// Note: The following imports can be skipped with vite-plugin-vuetify, ref: https://vuetifyjs.com/en/features/treeshaking/
+// import * as components from 'vuetify/components';
+// import * as directives from 'vuetify/directives';
+
+const vuetify = createVuetify({
+  // components,
+  // directives,
+  theme: {
+    // Using dark instead of light theme
+    defaultTheme: 'dark',
+  },
+});
+app.use(vuetify);
 
 app.mount('#app');

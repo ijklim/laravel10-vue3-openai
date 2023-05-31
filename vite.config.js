@@ -1,6 +1,8 @@
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
 import vue from '@vitejs/plugin-vue';
+// `vite-plugin-vuetify` enables automatic treeshaking, ref: https://vuetifyjs.com/en/features/treeshaking/
+import vuetify from 'vite-plugin-vuetify';
 
 export default defineConfig({
     plugins: [
@@ -19,6 +21,7 @@ export default defineConfig({
                 },
             },
         }),
+        vuetify(),
     ],
     resolve: {
         alias: {

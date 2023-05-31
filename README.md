@@ -1,4 +1,4 @@
-# Laravel 10, Vite 4, OpenAI
+# Laravel 10, Vite 4, OpenAI 3, Vuetify 3
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
 
@@ -15,28 +15,32 @@ Laravel is accessible, powerful, and provides tools required for large, robust a
 ## Setup
 
 ```sh
-# Check php version
+# === Check php version
 php -v
 # Note: If php version < 8, the composer command below might create Laravel 8 instead of 10
 
-# Create Laravel 10 project in folder laravel10-vue3-openai
+# === Create Laravel 10 project in folder laravel10-vue3-openai
 composer create-project laravel/laravel laravel10-vue3-openai
 # Note: Vite 4 is preinstalled in package.json
 
-# Install frontend scaffolding, starting point for integrating Vue.js
+# === Install frontend scaffolding, starting point for integrating Vue.js
 composer require laravel/ui
 
-# Generate the basic scaffolding for Vue.js
+# === Generate the basic scaffolding for Vue.js
 php artisan ui vue
 
-# Install Javascript modules
+# === Install Javascript modules
 yarn install
 
-# Install or upgrade libraries
+# === Install or upgrade libraries
+# Vue is the frontend framework, Axios here for upgrade purpose, already included in Laravel
 yarn add -D vue vue-router axios
+# OpenAI, the AI powered API server that answers questions
 yarn add openai
+# Vuetify is the styling library
+yarn add vuetify
 
-# Start server
+# === Start server
 php artisan serve
 yarn dev
 ```
