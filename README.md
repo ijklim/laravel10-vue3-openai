@@ -45,6 +45,8 @@ php artisan serve
 yarn dev
 ```
 
+* `.env::OPENAI_API_KEY` must be updated with a valid key from https://platform.openai.com, a free account can be created to generate a secret key
+
 ## Important Files and Folders
 
 * Laravel Entry Point: `resources/views/welcome.blade.php`
