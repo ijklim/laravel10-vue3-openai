@@ -54,6 +54,24 @@ yarn dev
 * Vue components: `resources/js/components/`
 * Vue routes: `resources/js/router/`
 
+## Deployment on shared hosting
+* Copy all files from the `public` folder into `public_html__chatgpt` on the host
+* Copy all folders except `public`, `node_modules`, and `tests` into a new folder at the same level as `public_html__chatgpt`, e.g. `server__chatgpt`
+  * Copy file `public/build/manifest.json` to `server__chatgpt/public/build/`
+  * Copy file `.env` to `server__chatgpt`
+* Change both `require` paths in `public_html__chatgpt\index.php` to point to the location above
+  * e.g. `require __DIR__.'/../server__chatgpt/vendor/autoload.php';` and `$app = require_once __DIR__.'/../server__chatgpt/bootstrap/app.php;`
+* Modify the settings in `server__chatgpt\.env` to reflect production environment
+  * APP_ENV=production
+  * APP_DEBUG=false
+  * APP_URL
+  * DB_CONNECTION
+  * DB_HOST
+  * DB_PORT
+  * DB_DATABASE
+  * DB_USERNAME
+  * DB_PASSWORD
+* Ensure PHP version is set to 8.1 or above
 ## References
 
 * Laravel 10 Application with Vue 3 https://medium.com/@laraveltuts/laravel-10-application-with-vue-3-complete-guide-to-crud-operations-3705f9a7cb22
