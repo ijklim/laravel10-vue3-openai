@@ -62,8 +62,15 @@
         <!-- Sizing doc: https://vuetifyjs.com/en/styles/sizing/ -->
         <VSheet class="mx-auto mt-5 bg-transparent">
           <VForm validate-on="submit lazy" @submit.prevent="submit">
-            <VTextField
+            <!-- Textarea doc: https://vuetifyjs.com/en/components/textareas/ -->
+            <VTextarea
+              auto-grow
+              clearable
+              clear-icon="mdi-close-circle"
+              counter
               label="What is your question?"
+              rows="3"
+              variant="outlined"
               v-model="question"
               :rules="rulesQuestion"
             />

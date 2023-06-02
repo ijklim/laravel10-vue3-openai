@@ -44,6 +44,9 @@ app.use(router);
 // Vuetify, doc: https://vuetifyjs.com/en/getting-started/installation/
 import 'vuetify/styles';
 import { createVuetify } from 'vuetify';
+// Vuetify Icon Fonts library, doc: https://vuetifyjs.com/en/features/icon-fonts/
+// Note: Must add cdn in `resources/views/welcome.blade.php`
+import { aliases, mdi } from 'vuetify/iconsets/mdi'
 // Note: The following imports can be skipped with vite-plugin-vuetify, ref: https://vuetifyjs.com/en/features/treeshaking/
 // import * as components from 'vuetify/components';
 // import * as directives from 'vuetify/directives';
@@ -51,6 +54,13 @@ import { createVuetify } from 'vuetify';
 const vuetify = createVuetify({
   // components,
   // directives,
+  icons: {
+    defaultSet: 'mdi',
+    aliases,
+    sets: {
+      mdi,
+    },
+  },
   theme: {
     // Using dark instead of light theme
     defaultTheme: 'dark',
