@@ -3,6 +3,8 @@
   import AppTitle from '@/components/AppTitle.vue';
 
   const question = ref("");
+  // Note: `questionWithAnswers` is set to `question` after a response is received from OpenAI
+  const questionWithAnswers = ref(null);
   const answers = ref([]);
   const isProcessing = ref(false);
   const rulesQuestion = [
@@ -17,6 +19,7 @@
   const submit = async (event) => {
     // Clear previous answer
     answers.value = [];
+    questionWithAnswers.value = null;
 
     const resultsFormValidation = await event;
     if (!resultsFormValidation.valid) {
@@ -40,6 +43,7 @@
     // Sample apiResponse: { id: "...", choices: [{ text: "..."}], model: "...", object: "...", usage: {} }
     // console.log(`[${import.meta.url.split('?')[0].split('/').slice(3).join('/')}::submit()] apiResponse`, apiResponse);
     if (apiResponse.status === 200) {
+      questionWithAnswers.value = question.value;
       answers.value = apiResponse.data?.choices[0]?.text.split('\n');
     }
 
@@ -61,6 +65,7 @@
         <!-- Form doc: https://vuetifyjs.com/en/components/forms/ -->
         <!-- Sizing doc: https://vuetifyjs.com/en/styles/sizing/ -->
         <VSheet class="mx-auto mt-5 bg-transparent">
+          <!-- === Form that allows user to ask question === -->
           <VForm validate-on="submit lazy" @submit.prevent="submit">
             <!-- Textarea doc: https://vuetifyjs.com/en/components/textareas/ -->
             <VTextarea
@@ -88,13 +93,23 @@
             </VBtn>
           </VForm>
 
-          <div class="mt-5 bg-blue-lighten-4 pa-5">
-            <em>{{ question }}</em>
+          <!-- === Results from OpenAI === -->
+          <!-- Colors doc: https://vuetifyjs.com/en/styles/colors/ -->
+          <VCard
+            class="mt-5 bg-brown-darken-4"
+            prepend-icon="mdi-microphone-question"
+            v-show="!!questionWithAnswers"
+          >
+            <template v-slot:title>
+              {{ questionWithAnswers }}
+            </template>
 
-            <div v-for="(answer, index) in answers" :key="index" class="mt-2">
-              <strong>{{ answer }}</strong>
-            </div>
-          </div>
+            <template v-slot:text>
+              <div v-for="(answer, index) in answers" :key="index" class="mt-2">
+                <strong>{{ answer }}</strong>
+              </div>
+            </template>
+          </VCard>
         </VSheet>
       </VContainer>
     </VMain>
