@@ -8,6 +8,11 @@ const routes = [
     path: '/',
     component: () => import('@/components/Main.vue'),
   },
+  {
+    // Matches setting in `/routes/web.php`
+    path: '/vue',
+    component: () => import('@/components/ExampleVuetify.vue'),
+  },
 ];
 
 const router = createRouter({

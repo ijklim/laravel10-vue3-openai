@@ -16,3 +16,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+// Pass all paths starting with /vue to Vue Router
+Route::get('/vue/{slug?}', function () {
+    return view('welcome');
+})->where('slug', '.*');

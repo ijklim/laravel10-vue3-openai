@@ -78,3 +78,5 @@ yarn dev
 * Laravel 10 Application with Vue 3 https://medium.com/@laraveltuts/laravel-10-application-with-vue-3-complete-guide-to-crud-operations-3705f9a7cb22
 
 * OpenAI API doc: https://platform.openai.com/docs/api-reference
+
+* Vuetify components doc: https://vuetifyjs.com/en/components/all/
