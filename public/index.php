@@ -5,6 +5,14 @@ use Illuminate\Http\Request;
 
 define('LARAVEL_START', microtime(true));
 
+// .env.production should only exist in the development environment
+// Note: app() and env() are not available at this point
+if (file_exists($isDevelopment = __DIR__.'/../.env.production')) {
+    define('DIR_SERVER', __DIR__ . '/..');
+} else {
+    define('DIR_SERVER', __DIR__ . '/../server__chatgpt');
+}
+
 /*
 |--------------------------------------------------------------------------
 | Check If The Application Is Under Maintenance
@@ -31,7 +39,7 @@ if (file_exists($maintenance = __DIR__.'/../storage/framework/maintenance.php'))
 |
 */
 
-require __DIR__.'/../vendor/autoload.php';
+require DIR_SERVER . '/vendor/autoload.php';
 
 /*
 |--------------------------------------------------------------------------
@@ -44,7 +52,7 @@ require __DIR__.'/../vendor/autoload.php';
 |
 */
 
-$app = require_once __DIR__.'/../bootstrap/app.php';
+$app = require_once DIR_SERVER . '/bootstrap/app.php';
 
 $kernel = $app->make(Kernel::class);
 
