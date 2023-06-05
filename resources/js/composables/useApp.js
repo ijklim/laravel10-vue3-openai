@@ -4,7 +4,7 @@ const info = {
     'Vite 4',
     'OpenAI 3',
   ],
-  version: '1.1.2',
+  version: '1.1.3',
 }
 
 export default () => {

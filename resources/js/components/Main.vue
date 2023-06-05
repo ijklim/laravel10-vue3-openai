@@ -35,7 +35,8 @@
       "parameters": {
         "model": "text-davinci-003",
         "prompt": question.value,
-        "max_tokens": 4000,
+        // Note: text-davinci-003 max content length is 4097, including question
+        "max_tokens": 4000 - question.value.split(' ').length,
         "temperature": 1.2
       }
     };
