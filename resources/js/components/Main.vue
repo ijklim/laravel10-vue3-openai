@@ -30,13 +30,23 @@
     isProcessing.value = true;
 
     // Axios + Vue doc: https://v2.vuejs.org/v2/cookbook/using-axios-to-consume-apis.html
+    // Condense multiple spaces and newlines
+    const patternCharsToReplace = /([^A-Za-z0-9_'":;])+/g
+    const questionFormatted = question.value.replaceAll(patternCharsToReplace, ' ');
+    const patternSeparator = /[ ]+/
+    const countTokensInQuestion = questionFormatted.split(patternSeparator).length;
+    // === Debug info ===
+    // console.log(`[${import.meta.url.split('?')[0].split('/').slice(3).join('/')}::submit()] questionFormatted`, questionFormatted);
+    // console.log(`[${import.meta.url.split('?')[0].split('/').slice(3).join('/')}::submit()] questionFormatted.split(patternSeparator)`, questionFormatted.split(patternSeparator));
+    // console.log(`[${import.meta.url.split('?')[0].split('/').slice(3).join('/')}::submit()] countTokensInQuestion`, countTokensInQuestion);
+
     const payload = {
       "endPoint": "completions",
       "parameters": {
         "model": "text-davinci-003",
-        "prompt": question.value,
+        "prompt": questionFormatted,
         // Note: text-davinci-003 max content length is 4097, including question
-        "max_tokens": 4000 - question.value.split(' ').length,
+        "max_tokens": 4000 - countTokensInQuestion,
         "temperature": 1.2
       }
     };
@@ -44,7 +54,7 @@
     // Sample apiResponse: { id: "...", choices: [{ text: "..."}], model: "...", object: "...", usage: {} }
     // console.log(`[${import.meta.url.split('?')[0].split('/').slice(3).join('/')}::submit()] apiResponse`, apiResponse);
     if (apiResponse.status === 200) {
-      questionWithAnswers.value = question.value;
+      questionWithAnswers.value = questionFormatted;
       answers.value = apiResponse.data?.choices[0]?.text.split('\n');
     }
 
