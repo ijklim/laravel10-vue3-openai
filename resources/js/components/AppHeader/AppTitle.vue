@@ -13,8 +13,8 @@
 <template>
   <h1>
     <!-- Combine packages into comma separated string -->
-    {{ app.info.packages.concat(packages).join(', ') }}
-    <small>v.{{ app.info.version }}</small>
+    {{ app.state.packages.concat(packages).join(', ') }}
+    <small>v.{{ app.state.version }}</small>
   </h1>
 </template>
 

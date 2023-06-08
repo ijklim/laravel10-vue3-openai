@@ -1,17 +1,66 @@
 <script setup>
-  import { ref } from 'vue';
+  import { computed, reactive, ref, watchEffect } from 'vue';
   import AppFooter from '@/components/AppFooter/index.vue';
   import AppHeader from '@/components/AppHeader/index.vue';
 
-  const question = ref("");
-  // Note: `questionWithAnswers` is set to `question` after a response is received from OpenAI
-  const questionWithAnswers = ref(null);
+  // === Data Variables ===
   const answers = ref([]);
+  const form = reactive({
+    // === For helper: Standard ===
+    questionFull: '',
+    // === For helper: Cover Letter ===
+    company: '',
+    position: '',
+    jobDescription: '',
+  });
+  // Note: `questionWithAnswers` is set to `questionFull` after a response is received from OpenAI
+  const questionWithAnswers = ref(null);
   const isProcessing = ref(false);
-  const rulesQuestion = [
-    value => value ? true : 'Enter a question.',
+  const rulesNotEmpty = [
+    value => value ? true : 'Enter a value.',
   ];
+  // OpenAI models
+  const availableModels = reactive({
+    'text-davinci-003': {
+      maxTokens: 4096,
+    },
+  });
+  const modelSelected = ref(Object.keys(availableModels)[0]);
+  // Input Helper Types
+  const helperInputTypes = [
+    'Standard',
+    'Cover Letter',
+    'Coming Soon',
+  ];
+  const helperInputTypeSelected = ref(helperInputTypes[0]);
 
+  // === Computed Fields ===
+  const questionFormatted = computed(() => {
+    // Condense multiple spaces and non word characters
+    const patternCharsToReplaceWithSpace = /([^A-Za-z0-9_'":;])+/g;
+    return form.questionFull.replaceAll(patternCharsToReplaceWithSpace, ' ');
+  });
+
+  const countWordsInQuestionFormatted = computed(() => {
+    // Words are separated by 1 or more spaces
+    const patternSeparator = /[ ]+/;
+    return questionFormatted.value.split(patternSeparator).length;
+  });
+
+  // === Watcher ===
+  watchEffect(() => {
+    if (!form.position || !form.company || !form.jobDescription) {
+      return;
+    }
+
+    form.questionFull = `
+      Applying for ${form.position} at ${form.company},
+      job description "${form.jobDescription}".
+      Write cover letter.
+    `;
+  });
+
+  // === Methods ===
   /**
    * Make api call to OpenAI server to ask a question
    *
@@ -31,24 +80,16 @@
     isProcessing.value = true;
 
     // Axios + Vue doc: https://v2.vuejs.org/v2/cookbook/using-axios-to-consume-apis.html
-    // Condense multiple spaces and newlines
-    const patternCharsToReplace = /([^A-Za-z0-9_'":;])+/g
-    const questionFormatted = question.value.replaceAll(patternCharsToReplace, ' ');
-    const patternSeparator = /[ ]+/
-    const countTokensInQuestion = questionFormatted.split(patternSeparator).length;
-    // === Debug info ===
-    // console.log(`[${import.meta.url.split('?')[0].split('/').slice(3).join('/')}::submit()] questionFormatted`, questionFormatted);
-    // console.log(`[${import.meta.url.split('?')[0].split('/').slice(3).join('/')}::submit()] questionFormatted.split(patternSeparator)`, questionFormatted.split(patternSeparator));
-    // console.log(`[${import.meta.url.split('?')[0].split('/').slice(3).join('/')}::submit()] countTokensInQuestion`, countTokensInQuestion);
-
+    // Token count doc: https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them
+    const maxTokensAfterPrompt = availableModels[modelSelected.value].maxTokens - parseInt(countWordsInQuestionFormatted.value * 100 / 70);
     const payload = {
-      "endPoint": "completions",
-      "parameters": {
-        "model": "text-davinci-003",
-        "prompt": questionFormatted,
-        // Note: text-davinci-003 max content length is 4097, including question
-        "max_tokens": 4000 - countTokensInQuestion,
-        "temperature": 1.2
+      endPoint: 'completions',
+      parameters: {
+        model: modelSelected.value,
+        prompt: questionFormatted.value,
+        // Note: max_tokens must take account of tokens in prompt
+        max_tokens: maxTokensAfterPrompt,
+        temperature: 1.2,
       }
     };
     const apiResponse = await axios.post('/api/openai/post', payload);
@@ -75,8 +116,56 @@
         <!-- Form doc: https://vuetifyjs.com/en/components/forms/ -->
         <!-- Sizing doc: https://vuetifyjs.com/en/styles/sizing/ -->
         <VSheet class="mx-auto mt-5 bg-transparent">
+          <!-- === Customization Panel === -->
+          <VContainer class="pa-0">
+            <VRow>
+              <VCol
+                cols="6"
+                class="flex-grow-1 flex-shrink-0"
+              >
+                <!-- === Input Helper Type Selector === -->
+                <!-- Button Toggle doc: https://vuetifyjs.com/en/components/button-groups/ -->
+                <VBtnToggle
+                  class="mb-3"
+                  color="deep-purple-accent-3"
+                  divided
+                  mandatory
+                  outlined
+                  rounded="lg"
+                  v-model="helperInputTypeSelected"
+                >
+                  <VBtn
+                    v-for="helperInputType in helperInputTypes"
+                    :key="helperInputType"
+                    :value="helperInputType"
+                  >
+                    {{ helperInputType }}
+                  </VBtn>
+                </VBtnToggle>
+              </VCol>
+
+              <VSpacer />
+
+              <VCol
+                cols="4"
+                class="flex-grow-0 flex-shrink-1"
+              >
+                <!-- === OpenAI model selector === -->
+                <!-- Selects doc: https://vuetifyjs.com/en/components/selects/ -->
+                <VSelect
+                  label="OpenAI Model"
+                  variant="solo-filled"
+                  v-model="modelSelected"
+                  :items="Object.keys(availableModels)"
+                >
+                </VSelect>
+              </VCol>
+            </VRow>
+          </VContainer>
+
           <!-- === Form that allows user to ask question === -->
           <VForm validate-on="submit lazy" @submit.prevent="submit">
+            <!-- === Input Helper: Standard === -->
             <!-- Textarea doc: https://vuetifyjs.com/en/components/textareas/ -->
             <VTextarea
               auto-grow
@@ -86,9 +175,49 @@
               label="What is your question?"
               rows="3"
               variant="outlined"
-              v-model="question"
-              :rules="rulesQuestion"
+              v-model="form.questionFull"
+              v-if="helperInputTypeSelected === 'Standard'"
+              :rules="rulesNotEmpty"
             />
+
+            <!-- === Input Helper: Cover Letter === -->
+            <VTextField
+              label="Company"
+              v-model="form.company"
+              v-if="helperInputTypeSelected === 'Cover Letter'"
+              :rules="rulesNotEmpty"
+            />
+
+            <VTextField
+              label="Position"
+              v-model="form.position"
+              v-if="helperInputTypeSelected === 'Cover Letter'"
+              :rules="rulesNotEmpty"
+            />
+
+            <VTextarea
+              auto-grow
+              clearable
+              clear-icon="mdi-close-circle"
+              label="Job Description"
+              rows="3"
+              variant="outlined"
+              v-model="form.jobDescription"
+              v-if="helperInputTypeSelected === 'Cover Letter'"
+              :rules="rulesNotEmpty"
+            />
+
+
+            <!-- For debug purpose, remove `d-none` to show -->
+            <div class="pa-5 d-none">
+              questionFormatted: {{ questionFormatted }}
+            </div>
+            <div class="pa-5 d-none">
+              countWordsInQuestionFormatted: {{ countWordsInQuestionFormatted }}
+            </div>
+            <div class="pa-5 d-none">
+              helperInputTypeSelected: {{ helperInputTypeSelected }}
+            </div>
 
             <!-- Button doc: https://vuetifyjs.com/en/components/buttons/ -->
             <VBtn
