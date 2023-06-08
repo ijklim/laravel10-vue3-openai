@@ -1,6 +1,7 @@
 <script setup>
   import { ref } from 'vue';
-  import AppTitle from '@/components/AppTitle.vue';
+  import AppFooter from '@/components/AppFooter/index.vue';
+  import AppHeader from '@/components/AppHeader/index.vue';
 
   const question = ref("");
   // Note: `questionWithAnswers` is set to `question` after a response is received from OpenAI
@@ -66,9 +67,7 @@
   <!-- Application Layout: https://vuetifyjs.com/en/features/application-layout/ -->
   <VApp>
     <!-- === Header === -->
-    <VAppBar class="pl-5">
-      <AppTitle :packages="['Vuetify 3']" />
-    </VAppBar>
+    <AppHeader />
 
     <!-- === Body === -->
     <VMain class="">
@@ -126,11 +125,7 @@
     </VMain>
 
     <!-- === Footer === -->
-    <VFooter class="d-flex justify-space-around flex-0-1">
-      <span>
-        Proudly brought to you by <a href="https://ivan-lim.com" target="_blank">Ivan Lim</a>
-      </span>
-    </VFooter>
+    <AppFooter />
   </VApp>
 </template>
 
