@@ -2,9 +2,12 @@
   import { computed, reactive, ref, watchEffect } from 'vue';
   import AppFooter from '@/components/AppFooter/index.vue';
   import AppHeader from '@/components/AppHeader/index.vue';
+  import ScreenBreakpoints from '@/components/Debug/ScreenBreakpoints.vue';
 
   // === Data Variables ===
+  const DEFAULT_BUTTON_TEXT_COPY_TO_CLIPBOARD = 'Copy Response';
   const answers = ref([]);
+  const btnTextCopyToClipboard = ref(DEFAULT_BUTTON_TEXT_COPY_TO_CLIPBOARD);
   const form = reactive({
     // === For helper: Standard ===
     questionFull: '',
@@ -21,9 +24,8 @@
   ];
   // OpenAI models
   const availableModels = reactive({
-    'gpt-3.5-turbo': {
-      maxTokens: 0,
-    },
+    'gpt-3.5-turbo': { created: 1677610602 },
+    'gpt-3.5-turbo-0301': { created: 1677649963 },
   });
   const modelSelected = ref(Object.keys(availableModels)[0]);
   // Input Helper Types
@@ -59,6 +61,21 @@
 
 
   // === Methods ===
+  /**
+   * Copy question response to clipboard
+   */
+  const copyResponseToClipboard = () => {
+    btnTextCopyToClipboard.value = 'Copying...';
+
+    navigator.clipboard.writeText(answers.value);
+
+    btnTextCopyToClipboard.value = 'Copyied!';
+
+    setTimeout(() => {
+      btnTextCopyToClipboard.value = DEFAULT_BUTTON_TEXT_COPY_TO_CLIPBOARD;
+    }, 1000);
+  }
+
   /**
    * Make api call to OpenAI server to ask a question
    *
@@ -112,6 +129,9 @@
 </script>
 
 <template>
+  <!-- === For Debug Purpose Only === -->
+  <!-- <ScreenBreakpoints /> -->
+
   <!-- Application Layout: https://vuetifyjs.com/en/features/application-layout/ -->
   <VApp>
     <!-- === Header === -->
@@ -122,18 +142,19 @@
       <VContainer class="">
         <!-- Form doc: https://vuetifyjs.com/en/components/forms/ -->
         <!-- Sizing doc: https://vuetifyjs.com/en/styles/sizing/ -->
+        <!-- Column Breakpoint doc: https://vuetifyjs.com/en/api/v-col/ -->
         <VSheet class="mx-auto mt-5 bg-transparent">
           <!-- === Customization Panel === -->
-          <VContainer class="pa-0">
-            <VRow>
+          <VContainer class="pa-0 mb-3">
+            <VRow no-gutters>
               <VCol
-                cols="8"
-                class="flex-grow-1 flex-shrink-0"
+                class="order-1 order-sm-0"
+                cols="12"
+                sm="8"
               >
                 <!-- === Input Helper Type Selector === -->
                 <!-- Button Toggle doc: https://vuetifyjs.com/en/components/button-groups/ -->
                 <VBtnToggle
-                  class="mb-3"
                   color="deep-purple-accent-3"
                   divided
                   mandatory
@@ -151,14 +172,14 @@
                 </VBtnToggle>
               </VCol>
 
-              <!-- <VSpacer /> -->
-
               <VCol
-                cols="4"
-                class="flex-grow-0 flex-shrink-1"
+                class="order-0 order-sm-1"
+                cols="12"
+                sm="4"
               >
                 <!-- === OpenAI model selector === -->
                 <!-- Selects doc: https://vuetifyjs.com/en/components/selects/ -->
+                <!-- Note: The gap below is taken up by .v-input__details:grid-area for error message -->
                 <VSelect
                   bg-color="deep-purple-accent-3"
                   density="comfortable"
@@ -222,9 +243,6 @@
               questionFormatted: {{ questionFormatted }}
             </div>
             <div class="pa-5 d-none">
-              countWordsInQuestionFormatted: {{ countWordsInQuestionFormatted }}
-            </div>
-            <div class="pa-5 d-none">
               helperInputTypeSelected: {{ helperInputTypeSelected }}
             </div>
 
@@ -252,11 +270,20 @@
               {{ questionWithAnswers }}
             </template>
 
-            <template v-slot:text>
+            <VCardText class="d-flex flex-column align-end">
+              <VBtn
+                class="mb-2"
+                color="info"
+                prepend-icon="mdi-content-copy"
+                @click="copyResponseToClipboard"
+              >
+                {{ btnTextCopyToClipboard }}
+              </VBtn>
+
               <div v-for="(answer, index) in answers" :key="index" class="mt-2">
                 <strong>{{ answer }}</strong>
               </div>
-            </template>
+            </VCardText>
           </VCard>
         </VSheet>
       </VContainer>
