@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 class OpenAIController extends Controller
 {
+    // Ref: https://platform.openai.com/docs/guides/gpt
     public static $host = 'https://api.openai.com/v1';
 
     /**

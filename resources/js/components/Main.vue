@@ -21,8 +21,8 @@
   ];
   // OpenAI models
   const availableModels = reactive({
-    'text-davinci-003': {
-      maxTokens: 4096,
+    'gpt-3.5-turbo': {
+      maxTokens: 0,
     },
   });
   const modelSelected = ref(Object.keys(availableModels)[0]);
@@ -30,9 +30,10 @@
   const helperInputTypes = [
     'Standard',
     'Cover Letter',
-    'Coming Soon',
   ];
   const helperInputTypeSelected = ref(helperInputTypes[0]);
+  // The default system message to set the tone of the conversation with OpenAI
+  const messageSystem = ref('You are a helpful assistant');
 
   // === Computed Fields ===
   const questionFormatted = computed(() => {
@@ -41,11 +42,6 @@
     return form.questionFull.replaceAll(patternCharsToReplaceWithSpace, ' ');
   });
 
-  const countWordsInQuestionFormatted = computed(() => {
-    // Words are separated by 1 or more spaces
-    const patternSeparator = /[ ]+/;
-    return questionFormatted.value.split(patternSeparator).length;
-  });
 
   // === Watcher ===
   watchEffect(() => {
@@ -58,7 +54,9 @@
       job description "${form.jobDescription}".
       Write cover letter.
     `;
+    messageSystem.value = 'You are a brilliant intelligent creative resume writer.';
   });
+
 
   // === Methods ===
   /**
@@ -81,23 +79,32 @@
 
     // Axios + Vue doc: https://v2.vuejs.org/v2/cookbook/using-axios-to-consume-apis.html
     // Token count doc: https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them
-    const maxTokensAfterPrompt = availableModels[modelSelected.value].maxTokens - parseInt(countWordsInQuestionFormatted.value * 100 / 70);
     const payload = {
-      endPoint: 'completions',
+      endPoint: 'chat/completions',
+      // Ref: https://platform.openai.com/docs/guides/gpt
       parameters: {
         model: modelSelected.value,
-        prompt: questionFormatted.value,
-        // Note: max_tokens must take account of tokens in prompt
-        max_tokens: maxTokensAfterPrompt,
-        temperature: 1.2,
-      }
+        messages: [
+          {
+            role: 'system',
+            content: messageSystem.value,
+          },
+          {
+            role: 'user',
+            content: questionFormatted.value,
+          }
+        ],
+      },
     };
     const apiResponse = await axios.post('/api/openai/post', payload);
     // Sample apiResponse: { id: "...", choices: [{ text: "..."}], model: "...", object: "...", usage: {} }
     // console.log(`[${import.meta.url.split('?')[0].split('/').slice(3).join('/')}::submit()] apiResponse`, apiResponse);
     if (apiResponse.status === 200) {
       questionWithAnswers.value = questionFormatted;
-      answers.value = apiResponse.data?.choices[0]?.text.split('\n');
+      // Model: 2020–2022
+      // answers.value = apiResponse.data?.choices[0]?.text.split('\n');
+      // Model: 2023-
+      answers.value = apiResponse.data?.choices[0]?.message?.content.split('\n');
     }
 
     isProcessing.value = false;
@@ -120,7 +127,7 @@
           <VContainer class="pa-0">
             <VRow>
               <VCol
-                cols="6"
+                cols="8"
                 class="flex-grow-1 flex-shrink-0"
               >
                 <!-- === Input Helper Type Selector === -->
@@ -144,7 +151,7 @@
                 </VBtnToggle>
               </VCol>
 
-              <VSpacer />
+              <!-- <VSpacer /> -->
 
               <VCol
                 cols="4"
@@ -153,8 +160,10 @@
                 <!-- === OpenAI model selector === -->
                 <!-- Selects doc: https://vuetifyjs.com/en/components/selects/ -->
                 <VSelect
+                  bg-color="deep-purple-accent-3"
+                  density="comfortable"
                   label="OpenAI Model"
-                  variant="solo-filled"
+                  variant="outlined"
                   v-model="modelSelected"
                   :items="Object.keys(availableModels)"
                 >
