@@ -1,5 +1,6 @@
 <script setup>
-  import { computed, reactive, ref, watchEffect } from 'vue';
+  import { computed, reactive, ref, toRaw, watchEffect } from 'vue';
+  import { useRoute } from 'vue-router';
   import AppFooter from '@/components/AppFooter/index.vue';
   import AppHeader from '@/components/AppHeader/index.vue';
   import ButtonCopyToClipboard from '@/components/ButtonCopyToClipboard/index.vue';
@@ -27,12 +28,6 @@
     'gpt-3.5-turbo-0301': { created: 1677649963 },
   });
   const modelSelected = ref(Object.keys(availableModels)[0]);
-  // Input Helper Types
-  const helperInputTypes = [
-    'Standard',
-    'Cover Letter',
-  ];
-  const helperInputTypeSelected = ref(helperInputTypes[0]);
   // The default system message to set the tone of the conversation with OpenAI
   const messageSystem = ref('You are a helpful assistant');
 
@@ -43,6 +38,20 @@
     return form.questionFull.replaceAll(patternCharsToReplaceWithSpace, ' ');
   });
 
+  // Input Helper Types
+  const helperInputTypes = computed(() => {
+    const route = useRoute();
+    // console.log(`[${import.meta.url.split('?')[0].split('/').slice(3).join('/')}::helperInputTypes()] route`, route, toRaw(route));
+    // console.log(`[${import.meta.url.split('?')[0].split('/').slice(3).join('/')}::helperInputTypes()] route.query`, route.query);
+
+    const results = ['Standard'];
+
+    if (route.query?.helper === 'cl') {
+      results.push('Cover Letter');
+    }
+    return results;
+  });
+  const helperInputTypeSelected = ref(helperInputTypes.value[0]);
 
   // === Watcher ===
   watchEffect(() => {
@@ -134,11 +143,11 @@
             <!-- Note: Using flex-row-reverse to place model selection to the right -->
             <!-- Note: Using no-gutters to reduce the gaps between vertically stacked VCols on small screen  -->
             <VRow no-gutters class="flex-row-reverse">
+              <!-- === OpenAI model selector === -->
               <VCol
                 cols="12"
                 sm="4"
               >
-                <!-- === OpenAI model selector === -->
                 <!-- Selects doc: https://vuetifyjs.com/en/components/selects/ -->
                 <!-- Note: The gap below is taken up by .v-input__details:grid-area for error message -->
                 <VSelect
@@ -152,12 +161,12 @@
                 </VSelect>
               </VCol>
 
+              <!-- === Input Helper Type Selector === -->
               <VCol
                 cols="12"
                 sm="8"
-                v-if="helperInputTypes.length > 0"
+                v-if="helperInputTypes.length > 1"
               >
-                <!-- === Input Helper Type Selector === -->
                 <!-- Button Toggle doc: https://vuetifyjs.com/en/components/button-groups/ -->
                 <VBtnToggle
                   color="deep-purple-accent-3"
@@ -249,7 +258,7 @@
           <!-- Colors doc: https://vuetifyjs.com/en/styles/colors/ -->
           <VCard
             class="mt-5 bg-brown-darken-4"
-            v-show="!!questionWithAnswers || true"
+            v-show="!!questionWithAnswers"
           >
             <!-- Card Item doc: https://vuetifyjs.com/en/api/v-card-item/ -->
             <VCardItem
