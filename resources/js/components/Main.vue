@@ -143,14 +143,35 @@
         <!-- Form doc: https://vuetifyjs.com/en/components/forms/ -->
         <!-- Sizing doc: https://vuetifyjs.com/en/styles/sizing/ -->
         <!-- Column Breakpoint doc: https://vuetifyjs.com/en/api/v-col/ -->
+        <!-- Flex doc: https://vuetifyjs.com/en/styles/flex/ -->
         <VSheet class="mx-auto mt-5 bg-transparent">
           <!-- === Customization Panel === -->
           <VContainer class="pa-0 mb-3">
-            <VRow no-gutters>
+            <!-- Note: Using flex-row-reverse to place model selection to the right -->
+            <!-- Note: Using no-gutters to reduce the gaps between vertically stacked VCols on small screen  -->
+            <VRow no-gutters class="flex-row-reverse">
               <VCol
-                class="order-1 order-sm-0"
+                cols="12"
+                sm="4"
+              >
+                <!-- === OpenAI model selector === -->
+                <!-- Selects doc: https://vuetifyjs.com/en/components/selects/ -->
+                <!-- Note: The gap below is taken up by .v-input__details:grid-area for error message -->
+                <VSelect
+                  bg-color="deep-purple-accent-3"
+                  density="comfortable"
+                  label="OpenAI Model"
+                  variant="outlined"
+                  v-model="modelSelected"
+                  :items="Object.keys(availableModels)"
+                >
+                </VSelect>
+              </VCol>
+
+              <VCol
                 cols="12"
                 sm="8"
+                v-if="helperInputTypes.length > 0"
               >
                 <!-- === Input Helper Type Selector === -->
                 <!-- Button Toggle doc: https://vuetifyjs.com/en/components/button-groups/ -->
@@ -170,25 +191,6 @@
                     {{ helperInputType }}
                   </VBtn>
                 </VBtnToggle>
-              </VCol>
-
-              <VCol
-                class="order-0 order-sm-1"
-                cols="12"
-                sm="4"
-              >
-                <!-- === OpenAI model selector === -->
-                <!-- Selects doc: https://vuetifyjs.com/en/components/selects/ -->
-                <!-- Note: The gap below is taken up by .v-input__details:grid-area for error message -->
-                <VSelect
-                  bg-color="deep-purple-accent-3"
-                  density="comfortable"
-                  label="OpenAI Model"
-                  variant="outlined"
-                  v-model="modelSelected"
-                  :items="Object.keys(availableModels)"
-                >
-                </VSelect>
               </VCol>
             </VRow>
           </VContainer>
