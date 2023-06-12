@@ -7,9 +7,9 @@
   import ScreenBreakpoints from '@/components/Debug/ScreenBreakpoints.vue';
 
   // === Data Variables ===
+  const INPUT_HELPER_TYPE_DEFAULT = 'Standard';
   const answers = ref([]);
   const form = reactive({
-    // === For helper: Standard ===
     questionFull: '',
     // === For helper: Cover Letter ===
     company: '',
@@ -27,6 +27,7 @@
     'gpt-3.5-turbo': { created: 1677610602 },
     'gpt-3.5-turbo-0301': { created: 1677649963 },
   });
+  const helperInputTypeSelected = ref(INPUT_HELPER_TYPE_DEFAULT);
   const modelSelected = ref(Object.keys(availableModels)[0]);
   // The default system message to set the tone of the conversation with OpenAI
   const messageSystem = ref('You are a helpful assistant');
@@ -44,14 +45,13 @@
     // console.log(`[${import.meta.url.split('?')[0].split('/').slice(3).join('/')}::helperInputTypes()] route`, route, toRaw(route));
     // console.log(`[${import.meta.url.split('?')[0].split('/').slice(3).join('/')}::helperInputTypes()] route.query`, route.query);
 
-    const results = ['Standard'];
+    const results = [INPUT_HELPER_TYPE_DEFAULT];
 
     if (route.query?.helper === 'cl') {
       results.push('Cover Letter');
     }
     return results;
   });
-  const helperInputTypeSelected = ref(helperInputTypes.value[0]);
 
   // === Watcher ===
   watchEffect(() => {
@@ -190,7 +190,7 @@
 
           <!-- === Form that allows user to ask question === -->
           <VForm validate-on="submit lazy" @submit.prevent="submit">
-            <!-- === Input Helper: Standard === -->
+            <!-- === Input Helper: (Default) === -->
             <!-- Textarea doc: https://vuetifyjs.com/en/components/textareas/ -->
             <VTextarea
               auto-grow
@@ -201,7 +201,7 @@
               rows="3"
               variant="outlined"
               v-model="form.questionFull"
-              v-if="helperInputTypeSelected === 'Standard'"
+              v-if="helperInputTypeSelected === INPUT_HELPER_TYPE_DEFAULT"
               :rules="rulesNotEmpty"
             />
 
