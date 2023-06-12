@@ -249,22 +249,30 @@
           <!-- Colors doc: https://vuetifyjs.com/en/styles/colors/ -->
           <VCard
             class="mt-5 bg-brown-darken-4"
-            prepend-icon="mdi-microphone-question"
             v-show="!!questionWithAnswers || true"
           >
-            <template v-slot:title>
-              {{ questionWithAnswers }}
-            </template>
+            <!-- Card Item doc: https://vuetifyjs.com/en/api/v-card-item/ -->
+            <VCardItem
+              prepend-icon="mdi-microphone-question"
+            >
+              <!-- === Question entered by the user === -->
+              <VCardTitle>
+                {{ questionWithAnswers }}
+              </VCardTitle>
 
-            <VCardText class="d-flex flex-column">
               <!-- === Button: Copy To Clipboard === -->
-              <div class="text-right">
+              <template v-slot:append>
                 <ButtonCopyToClipboard
                   buttonTextOriginal="Copy Response"
                   :contentToCopy="answers"
                 />
-              </div>
+              </template>
+            </VCardItem>
 
+            <VDivider />
+
+            <!-- === Answers === -->
+            <VCardText class="d-flex flex-column">
               <div v-for="(answer, index) in answers" :key="index" class="mt-2">
                 <strong>{{ answer }}</strong>
               </div>

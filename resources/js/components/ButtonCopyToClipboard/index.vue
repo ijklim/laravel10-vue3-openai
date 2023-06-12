@@ -1,6 +1,5 @@
 <template>
   <VBtn
-    class="mb-2"
     color="info"
     prepend-icon="mdi-content-copy"
     @click="handleCopy"
