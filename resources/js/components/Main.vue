@@ -2,12 +2,11 @@
   import { computed, reactive, ref, watchEffect } from 'vue';
   import AppFooter from '@/components/AppFooter/index.vue';
   import AppHeader from '@/components/AppHeader/index.vue';
+  import ButtonCopyToClipboard from '@/components/ButtonCopyToClipboard/index.vue';
   import ScreenBreakpoints from '@/components/Debug/ScreenBreakpoints.vue';
 
   // === Data Variables ===
-  const DEFAULT_BUTTON_TEXT_COPY_TO_CLIPBOARD = 'Copy Response';
   const answers = ref([]);
-  const btnTextCopyToClipboard = ref(DEFAULT_BUTTON_TEXT_COPY_TO_CLIPBOARD);
   const form = reactive({
     // === For helper: Standard ===
     questionFull: '',
@@ -61,21 +60,6 @@
 
 
   // === Methods ===
-  /**
-   * Copy question response to clipboard
-   */
-  const copyResponseToClipboard = () => {
-    btnTextCopyToClipboard.value = 'Copying...';
-
-    navigator.clipboard.writeText(answers.value);
-
-    btnTextCopyToClipboard.value = 'Copyied!';
-
-    setTimeout(() => {
-      btnTextCopyToClipboard.value = DEFAULT_BUTTON_TEXT_COPY_TO_CLIPBOARD;
-    }, 1000);
-  }
-
   /**
    * Make api call to OpenAI server to ask a question
    *
@@ -266,21 +250,20 @@
           <VCard
             class="mt-5 bg-brown-darken-4"
             prepend-icon="mdi-microphone-question"
-            v-show="!!questionWithAnswers"
+            v-show="!!questionWithAnswers || true"
           >
             <template v-slot:title>
               {{ questionWithAnswers }}
             </template>
 
-            <VCardText class="d-flex flex-column align-end">
-              <VBtn
-                class="mb-2"
-                color="info"
-                prepend-icon="mdi-content-copy"
-                @click="copyResponseToClipboard"
-              >
-                {{ btnTextCopyToClipboard }}
-              </VBtn>
+            <VCardText class="d-flex flex-column">
+              <!-- === Button: Copy To Clipboard === -->
+              <div class="text-right">
+                <ButtonCopyToClipboard
+                  buttonTextOriginal="Copy Response"
+                  :contentToCopy="answers"
+                />
+              </div>
 
               <div v-for="(answer, index) in answers" :key="index" class="mt-2">
                 <strong>{{ answer }}</strong>
