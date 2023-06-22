@@ -1,9 +1,8 @@
 <script setup>
-  import useApp from '@/composables/useApp.js';
-  const app = useApp();
+  import { packages, version } from '@/utilities/constants.js';
 
   defineProps({
-    packages: {
+    additionalPackages: {
       type: Array,
       default: () => [],
     },
@@ -13,8 +12,8 @@
 <template>
   <h1>
     <!-- Combine packages into comma separated string -->
-    {{ app.state.packages.concat(packages).join(', ') }}
-    <small>v.{{ app.state.version }}</small>
+    {{ packages.concat(additionalPackages).join(', ') }}
+    <small>v.{{ version }}</small>
   </h1>
 </template>
 

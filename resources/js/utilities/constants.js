@@ -1,3 +1,14 @@
+// === App Specific Info ===
+export const packages = [
+  'Laravel 10',
+  'Vite 4',
+  'OpenAI 3',
+];
+
+export const version = '1.3.8';
+
+
+// === OpenAI Info ===
 export const OPENAI_REQUEST_TYPES = {
   CHAT: 'CHAT',
   IMAGE: 'IMAGE',
