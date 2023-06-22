@@ -1,5 +1,5 @@
 <script setup>
-  import { computed, ref, toRaw } from 'vue';
+  import { defineAsyncComponent, ref, shallowRef } from 'vue';
   import { useRoute } from 'vue-router';
   import AppFooter from '@/components/AppFooter/index.vue';
   import AppHeader from '@/components/AppHeader/index.vue';
@@ -7,29 +7,27 @@
   import ScreenBreakpoints from '@/components/Debug/ScreenBreakpoints.vue';
   import useOpenAI from '@/composables/useOpenAI.js';
   import useProcessing from '@/composables/useProcessing.js';
-  import InputHelperStandard from '@/components/InputHelpers/Standard.vue';
-  import InputHelperCoverLetter from '@/components/InputHelpers/CoverLetter.vue';
 
   const openAI = useOpenAI();
   const processing = useProcessing();
+  const route = useRoute();
 
   // === Data Variables ===
-  const INPUT_HELPER_TYPE_DEFAULT = 'Standard';
-  const helperInputTypeSelected = ref(INPUT_HELPER_TYPE_DEFAULT);
+  const inputHelperComponents = shallowRef([
+    {
+      name: 'Standard',
+      component: defineAsyncComponent(() => import('@/components/InputHelpers/Standard.vue')),
+    },
+  ]);
+  const inputHelperComponentSelectedIndex = ref(0);
 
-  // Input Helper Types
-  const helperInputTypes = computed(() => {
-    const route = useRoute();
-    // console.log(`[${import.meta.url.split('?')[0].split('/').slice(3).join('/')}::helperInputTypes()] route`, route, toRaw(route));
-    // console.log(`[${import.meta.url.split('?')[0].split('/').slice(3).join('/')}::helperInputTypes()] route.query`, route.query);
-
-    const results = [INPUT_HELPER_TYPE_DEFAULT];
-
-    if (route.query?.helper === 'cl') {
-      results.push('Cover Letter');
-    }
-    return results;
-  });
+  if (route.query?.helper === 'cl') {
+    // `?helper=cl`, supports Cover Letter
+    inputHelperComponents.value.push({
+      name: 'Cover Letter',
+      component: defineAsyncComponent(() => import('@/components/InputHelpers/CoverLetter.vue')),
+    });
+  }
 </script>
 
 <template>
@@ -76,7 +74,7 @@
               <VCol
                 cols="12"
                 sm="8"
-                v-if="helperInputTypes.length > 1"
+                v-if="inputHelperComponents.length > 1"
               >
                 <!-- Button Toggle doc: https://vuetifyjs.com/en/components/button-groups/ -->
                 <VBtnToggle
@@ -85,14 +83,14 @@
                   mandatory
                   outlined
                   rounded="lg"
-                  v-model="helperInputTypeSelected"
+                  v-model="inputHelperComponentSelectedIndex"
                 >
                   <VBtn
-                    v-for="helperInputType in helperInputTypes"
-                    :key="helperInputType"
-                    :value="helperInputType"
+                    v-for="(inputHelperComponent, index) in inputHelperComponents"
+                    :key="index"
+                    :value="index"
                   >
-                    {{ helperInputType }}
+                    {{ inputHelperComponent.name }}
                   </VBtn>
                 </VBtnToggle>
               </VCol>
@@ -101,24 +99,10 @@
 
           <!-- === Form that allows user to ask question === -->
           <VForm validate-on="submit lazy" @submit.prevent="openAI.submitForm">
-            <!-- === Input Helper: (Default) === -->
-            <InputHelperStandard
-              v-if="helperInputTypeSelected === INPUT_HELPER_TYPE_DEFAULT"
+            <!-- === Input Helper Component === -->
+            <component
+              :is="inputHelperComponents[inputHelperComponentSelectedIndex].component"
             />
-
-            <!-- === Input Helper: Cover Letter === -->
-            <InputHelperCoverLetter
-              v-if="helperInputTypeSelected === 'Cover Letter'"
-            />
-
-
-            <!-- For debug purpose, remove `d-none` to show -->
-            <div class="pa-5 d-none">
-              questionFormatted: {{ openAI.questionFormatted }}
-            </div>
-            <div class="pa-5 d-none">
-              helperInputTypeSelected: {{ helperInputTypeSelected }}
-            </div>
 
             <!-- Button doc: https://vuetifyjs.com/en/components/buttons/ -->
             <VBtn
