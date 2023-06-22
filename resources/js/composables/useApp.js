@@ -5,7 +5,7 @@ const state = {
     'Vite 4',
     'OpenAI 3',
   ],
-  version: '1.3.4',
+  version: '1.3.7',
 };
 
 export default () => {

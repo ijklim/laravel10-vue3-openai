@@ -3,22 +3,22 @@
  */
 import { computed, reactive } from 'vue';
 import useProcessing from '@/composables/useProcessing.js';
-
-// OpenAI models
-const OPENAI_MODELS = {
-  'gpt-3.5-turbo': { created: 1677610602 },
-  'gpt-3.5-turbo-0301': { created: 1677649963 },
-};
+import {
+  OPENAI_MODELS,
+  OPENAI_REQUEST_TYPES,
+  IMAGE_SIZES,
+  RESPONSE_DEFAULT
+} from '@/utilities/constants.js';
 
 const state = reactive({
   answersFromAI: [],
   form: {
+    imageSize: IMAGE_SIZES[0],
     questionComplete: '',
   },
   messageSystem: null,
   modelSelected: Object.keys(OPENAI_MODELS)[0],
-  // Once answer is received from AI, questionWithAnswers is set to user's question
-  questionWithAnswers: null,
+  responseFromAI: JSON.parse(JSON.stringify(RESPONSE_DEFAULT)),
 });
 
 export default () => {
@@ -29,6 +29,42 @@ export default () => {
     return state.form.questionComplete.replaceAll(patternCharsToReplaceWithSpace, ' ');
   });
 
+  /**
+   * Construct parameters based on different request type
+   *
+   * Ref: https://platform.openai.com/docs/api-reference/[chat|images]
+   */
+  const apiParamenters = computed(() => {
+    switch (OPENAI_MODELS[state.modelSelected].requestType) {
+      // === Chat Completion ===
+      case OPENAI_REQUEST_TYPES.CHAT:
+        return {
+          model: state.modelSelected,
+          messages: [
+            {
+              role: 'system',
+              content: state.messageSystem ?? 'You are a helpful assistant',
+            },
+            {
+              role: 'user',
+              content: questionFormatted.value,
+            }
+          ],
+        };
+      // === Image Generation ===
+      case OPENAI_REQUEST_TYPES.IMAGE:
+        return {
+          // Currently only support 1 image per call
+          n: 1,
+          prompt: questionFormatted.value,
+          size: state.form.imageSize,
+        };
+    }
+
+    // Should not happen, all types should be defined above
+    return {};
+  });
+
   // === Methods ===
   /**
    * Make api call to OpenAI server to ask a question
@@ -36,9 +72,8 @@ export default () => {
    * @param {*} event
    */
   const submitForm = async (event) => {
-    // Clear previous answers
-    state.answersFromAI = [];
-    state.questionWithAnswers = null;
+    // Restore default
+    state.responseFromAI = JSON.parse(JSON.stringify(RESPONSE_DEFAULT));
 
     const resultsFormValidation = await event;
     if (!resultsFormValidation.valid) {
@@ -53,37 +88,39 @@ export default () => {
     // Axios + Vue doc: https://v2.vuejs.org/v2/cookbook/using-axios-to-consume-apis.html
     // Token count doc: https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them
     const payload = {
-      endPoint: 'chat/completions',
+      endPoint: OPENAI_MODELS[state.modelSelected].endPoint,
       // Ref: https://platform.openai.com/docs/guides/gpt
-      parameters: {
-        model: state.modelSelected,
-        messages: [
-          {
-            role: 'system',
-            content: state.messageSystem ?? 'You are a helpful assistant',
-          },
-          {
-            role: 'user',
-            content: questionFormatted.value,
-          }
-        ],
-      },
+      parameters: apiParamenters.value,
     };
     const apiResponse = await axios.post('/api/openai/post', payload);
     // Sample apiResponse: { id: "...", choices: [{ text: "..."}], model: "...", object: "...", usage: {} }
     if (apiResponse.status === 200) {
-      state.questionWithAnswers = questionFormatted.value;
-      // Model: 2020–2022
-      // state.answersFromAI = apiResponse.data?.choices[0]?.text.split('\n');
-      // Model: 2023-
-      state.answersFromAI = apiResponse.data?.choices[0]?.message?.content.split('\n');
+      state.responseFromAI.prompt = questionFormatted.value;
+      state.responseFromAI.requestType = OPENAI_MODELS[state.modelSelected].requestType;
+
+      switch (state.responseFromAI.requestType) {
+        // === Chat Completion ===
+        case OPENAI_REQUEST_TYPES.CHAT:
+          state.responseFromAI.answers = apiResponse.data?.choices[0]?.message?.content.split('\n');
+          break;
+        // === Image Generation ===
+        case OPENAI_REQUEST_TYPES.IMAGE:
+          state.responseFromAI.image = {
+            height: state.form.imageSize.split('x')[1],
+            url: apiResponse.data?.data[0]?.url,
+            width: state.form.imageSize.split('x')[0],
+          };
+          state.responseFromAI.canBeCopiedToClipboard = false;
+          break;
+      }
+
+      state.responseFromAI.isDisplayReady = true;
     }
 
     processing.clearEvent(eventCode);
   };
 
   return {
-    OPENAI_MODELS,
     questionFormatted,
     state,
     submitForm,

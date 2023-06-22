@@ -3,10 +3,11 @@
   import { useRoute } from 'vue-router';
   import AppFooter from '@/components/AppFooter/index.vue';
   import AppHeader from '@/components/AppHeader/index.vue';
-  import ButtonCopyToClipboard from '@/components/ButtonCopyToClipboard/index.vue';
   import ScreenBreakpoints from '@/components/Debug/ScreenBreakpoints.vue';
+  import ResultDisplay from '@/components/ResultDisplay.vue';
   import useOpenAI from '@/composables/useOpenAI.js';
   import useProcessing from '@/composables/useProcessing.js';
+  import { OPENAI_MODELS } from '@/utilities/constants.js';
 
   const openAI = useOpenAI();
   const processing = useProcessing();
@@ -65,7 +66,7 @@
                   label="OpenAI Model"
                   variant="outlined"
                   v-model="openAI.state.modelSelected"
-                  :items="Object.keys(openAI.OPENAI_MODELS)"
+                  :items="Object.keys(OPENAI_MODELS)"
                 >
                 </VSelect>
               </VCol>
@@ -118,38 +119,7 @@
           </VForm>
 
           <!-- === Results from OpenAI === -->
-          <!-- Colors doc: https://vuetifyjs.com/en/styles/colors/ -->
-          <VCard
-            class="mt-5 bg-brown-darken-4"
-            v-show="!!openAI.state.questionWithAnswers"
-          >
-            <!-- Card Item doc: https://vuetifyjs.com/en/api/v-card-item/ -->
-            <VCardItem
-              prepend-icon="mdi-microphone-question"
-            >
-              <!-- === Question entered by the user === -->
-              <VCardTitle>
-                {{ openAI.state.questionWithAnswers }}
-              </VCardTitle>
-
-              <!-- === Button: Copy To Clipboard === -->
-              <template v-slot:append>
-                <ButtonCopyToClipboard
-                  buttonTextOriginal="Copy Response"
-                  :contentToCopy="openAI.state.answersFromAI"
-                />
-              </template>
-            </VCardItem>
-
-            <VDivider />
-
-            <!-- === Answers === -->
-            <VCardText class="d-flex flex-column">
-              <div v-for="(answer, index) in openAI.state.answersFromAI" :key="index" class="mt-2">
-                <strong>{{ answer }}</strong>
-              </div>
-            </VCardText>
-          </VCard>
+          <ResultDisplay />
         </VSheet>
       </VContainer>
     </VMain>
