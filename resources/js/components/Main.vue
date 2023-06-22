@@ -1,5 +1,5 @@
 <script setup>
-  import { computed, reactive, ref, toRaw, watchEffect } from 'vue';
+  import { computed, ref, toRaw } from 'vue';
   import { useRoute } from 'vue-router';
   import AppFooter from '@/components/AppFooter/index.vue';
   import AppHeader from '@/components/AppHeader/index.vue';
@@ -7,22 +7,14 @@
   import ScreenBreakpoints from '@/components/Debug/ScreenBreakpoints.vue';
   import useOpenAI from '@/composables/useOpenAI.js';
   import useProcessing from '@/composables/useProcessing.js';
+  import InputHelperStandard from '@/components/InputHelpers/Standard.vue';
+  import InputHelperCoverLetter from '@/components/InputHelpers/CoverLetter.vue';
 
   const openAI = useOpenAI();
   const processing = useProcessing();
 
   // === Data Variables ===
   const INPUT_HELPER_TYPE_DEFAULT = 'Standard';
-  // const answers = ref([]);
-  const form = reactive({
-    // === For helper: Cover Letter ===
-    company: '',
-    position: '',
-    jobDescription: '',
-  });
-  const rulesNotEmpty = [
-    value => value ? true : 'Enter a value.',
-  ];
   const helperInputTypeSelected = ref(INPUT_HELPER_TYPE_DEFAULT);
 
   // Input Helper Types
@@ -37,21 +29,6 @@
       results.push('Cover Letter');
     }
     return results;
-  });
-
-  // === Watcher ===
-  // Todo: Move out to own module
-  watchEffect(() => {
-    if (!form.position || !form.company || !form.jobDescription) {
-      return;
-    }
-
-    form.questionFull = `
-      Applying for ${form.position} at ${form.company},
-      job description "${form.jobDescription}".
-      Write cover letter.
-    `;
-    messageSystem.value = 'You are a brilliant intelligent creative resume writer.';
   });
 </script>
 
@@ -125,45 +102,13 @@
           <!-- === Form that allows user to ask question === -->
           <VForm validate-on="submit lazy" @submit.prevent="openAI.submitForm">
             <!-- === Input Helper: (Default) === -->
-            <!-- Textarea doc: https://vuetifyjs.com/en/components/textareas/ -->
-            <VTextarea
-              auto-grow
-              clearable
-              clear-icon="mdi-close-circle"
-              counter
-              label="What is your question?"
-              rows="3"
-              variant="outlined"
-              v-model="openAI.state.form.questionComplete"
+            <InputHelperStandard
               v-if="helperInputTypeSelected === INPUT_HELPER_TYPE_DEFAULT"
-              :rules="rulesNotEmpty"
             />
 
             <!-- === Input Helper: Cover Letter === -->
-            <VTextField
-              label="Company"
-              v-model="form.company"
+            <InputHelperCoverLetter
               v-if="helperInputTypeSelected === 'Cover Letter'"
-              :rules="rulesNotEmpty"
-            />
-
-            <VTextField
-              label="Position"
-              v-model="form.position"
-              v-if="helperInputTypeSelected === 'Cover Letter'"
-              :rules="rulesNotEmpty"
-            />
-
-            <VTextarea
-              auto-grow
-              clearable
-              clear-icon="mdi-close-circle"
-              label="Job Description"
-              rows="3"
-              variant="outlined"
-              v-model="form.jobDescription"
-              v-if="helperInputTypeSelected === 'Cover Letter'"
-              :rules="rulesNotEmpty"
             />
 
 

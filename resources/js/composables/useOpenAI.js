@@ -15,6 +15,7 @@ const state = reactive({
   form: {
     questionComplete: '',
   },
+  messageSystem: null,
   modelSelected: Object.keys(OPENAI_MODELS)[0],
   // Once answer is received from AI, questionWithAnswers is set to user's question
   questionWithAnswers: null,
@@ -59,7 +60,7 @@ export default () => {
         messages: [
           {
             role: 'system',
-            content: 'You are a helpful assistant',
+            content: state.messageSystem ?? 'You are a helpful assistant',
           },
           {
             role: 'user',
@@ -71,7 +72,7 @@ export default () => {
     const apiResponse = await axios.post('/api/openai/post', payload);
     // Sample apiResponse: { id: "...", choices: [{ text: "..."}], model: "...", object: "...", usage: {} }
     if (apiResponse.status === 200) {
-      state.questionWithAnswers = questionFormatted;
+      state.questionWithAnswers = questionFormatted.value;
       // Model: 2020–2022
       // state.answersFromAI = apiResponse.data?.choices[0]?.text.split('\n');
       // Model: 2023-
