@@ -7,11 +7,13 @@
   import ResultDisplay from '@/components/ResultDisplay.vue';
   import useOpenAI from '@/composables/useOpenAI.js';
   import useProcessing from '@/composables/useProcessing.js';
+  import useUserSelection from '@/composables/useUserSelection.js';
   import { OPENAI_MODELS } from '@/utilities/constants.js';
 
   const openAI = useOpenAI();
   const processing = useProcessing();
   const route = useRoute();
+  const userSelection = useUserSelection();
 
   // === Data Variables ===
   const inputHelperComponents = shallowRef([
@@ -65,7 +67,7 @@
                   density="comfortable"
                   label="OpenAI Model"
                   variant="outlined"
-                  v-model="openAI.state.modelSelected"
+                  v-model="userSelection.activeOpenAIModelKey"
                   :items="Object.keys(OPENAI_MODELS)"
                 >
                 </VSelect>

@@ -3,6 +3,7 @@
  */
 import { computed, reactive } from 'vue';
 import useProcessing from '@/composables/useProcessing.js';
+import useUserSelection from '@/composables/useUserSelection.js';
 import {
   OPENAI_MODELS,
   OPENAI_REQUEST_TYPES,
@@ -17,9 +18,10 @@ const state = reactive({
     questionComplete: '',
   },
   messageSystem: null,
-  modelSelected: Object.keys(OPENAI_MODELS)[0],
   responseFromAI: JSON.parse(JSON.stringify(RESPONSE_DEFAULT)),
 });
+
+const userSelection = useUserSelection();
 
 export default () => {
   // === Computed Fields ===
@@ -35,11 +37,11 @@ export default () => {
    * Ref: https://platform.openai.com/docs/api-reference/[chat|images]
    */
   const apiParamenters = computed(() => {
-    switch (OPENAI_MODELS[state.modelSelected].requestType) {
+    switch (OPENAI_MODELS[userSelection.activeOpenAIModelKey.value].requestType) {
       // === Chat Completion ===
       case OPENAI_REQUEST_TYPES.CHAT:
         return {
-          model: state.modelSelected,
+          model: userSelection.activeOpenAIModelKey.value,
           messages: [
             {
               role: 'system',
@@ -88,7 +90,7 @@ export default () => {
     // Axios + Vue doc: https://v2.vuejs.org/v2/cookbook/using-axios-to-consume-apis.html
     // Token count doc: https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them
     const payload = {
-      endPoint: OPENAI_MODELS[state.modelSelected].endPoint,
+      endPoint: OPENAI_MODELS[userSelection.activeOpenAIModelKey.value].endPoint,
       // Ref: https://platform.openai.com/docs/guides/gpt
       parameters: apiParamenters.value,
     };
@@ -96,7 +98,7 @@ export default () => {
     // Sample apiResponse: { id: "...", choices: [{ text: "..."}], model: "...", object: "...", usage: {} }
     if (apiResponse.status === 200) {
       state.responseFromAI.prompt = questionFormatted.value;
-      state.responseFromAI.requestType = OPENAI_MODELS[state.modelSelected].requestType;
+      state.responseFromAI.requestType = OPENAI_MODELS[userSelection.activeOpenAIModelKey.value].requestType;
 
       switch (state.responseFromAI.requestType) {
         // === Chat Completion ===
