@@ -5,39 +5,25 @@
   import AppHeader from '@/components/AppHeader/index.vue';
   import ButtonCopyToClipboard from '@/components/ButtonCopyToClipboard/index.vue';
   import ScreenBreakpoints from '@/components/Debug/ScreenBreakpoints.vue';
+  import useOpenAI from '@/composables/useOpenAI.js';
+  import useProcessing from '@/composables/useProcessing.js';
+
+  const openAI = useOpenAI();
+  const processing = useProcessing();
 
   // === Data Variables ===
   const INPUT_HELPER_TYPE_DEFAULT = 'Standard';
-  const answers = ref([]);
+  // const answers = ref([]);
   const form = reactive({
-    questionFull: '',
     // === For helper: Cover Letter ===
     company: '',
     position: '',
     jobDescription: '',
   });
-  // Note: `questionWithAnswers` is set to `questionFull` after a response is received from OpenAI
-  const questionWithAnswers = ref(null);
-  const isProcessing = ref(false);
   const rulesNotEmpty = [
     value => value ? true : 'Enter a value.',
   ];
-  // OpenAI models
-  const availableModels = reactive({
-    'gpt-3.5-turbo': { created: 1677610602 },
-    'gpt-3.5-turbo-0301': { created: 1677649963 },
-  });
   const helperInputTypeSelected = ref(INPUT_HELPER_TYPE_DEFAULT);
-  const modelSelected = ref(Object.keys(availableModels)[0]);
-  // The default system message to set the tone of the conversation with OpenAI
-  const messageSystem = ref('You are a helpful assistant');
-
-  // === Computed Fields ===
-  const questionFormatted = computed(() => {
-    // Condense multiple spaces and non word characters
-    const patternCharsToReplaceWithSpace = /([^A-Za-z0-9_'":;])+/g;
-    return form.questionFull.replaceAll(patternCharsToReplaceWithSpace, ' ');
-  });
 
   // Input Helper Types
   const helperInputTypes = computed(() => {
@@ -54,6 +40,7 @@
   });
 
   // === Watcher ===
+  // Todo: Move out to own module
   watchEffect(() => {
     if (!form.position || !form.company || !form.jobDescription) {
       return;
@@ -66,59 +53,6 @@
     `;
     messageSystem.value = 'You are a brilliant intelligent creative resume writer.';
   });
-
-
-  // === Methods ===
-  /**
-   * Make api call to OpenAI server to ask a question
-   *
-   * @param {*} event
-   */
-  const submit = async (event) => {
-    // Clear previous answer
-    answers.value = [];
-    questionWithAnswers.value = null;
-
-    const resultsFormValidation = await event;
-    if (!resultsFormValidation.valid) {
-      // Form fails validation
-      return;
-    }
-
-    isProcessing.value = true;
-
-    // Axios + Vue doc: https://v2.vuejs.org/v2/cookbook/using-axios-to-consume-apis.html
-    // Token count doc: https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them
-    const payload = {
-      endPoint: 'chat/completions',
-      // Ref: https://platform.openai.com/docs/guides/gpt
-      parameters: {
-        model: modelSelected.value,
-        messages: [
-          {
-            role: 'system',
-            content: messageSystem.value,
-          },
-          {
-            role: 'user',
-            content: questionFormatted.value,
-          }
-        ],
-      },
-    };
-    const apiResponse = await axios.post('/api/openai/post', payload);
-    // Sample apiResponse: { id: "...", choices: [{ text: "..."}], model: "...", object: "...", usage: {} }
-    // console.log(`[${import.meta.url.split('?')[0].split('/').slice(3).join('/')}::submit()] apiResponse`, apiResponse);
-    if (apiResponse.status === 200) {
-      questionWithAnswers.value = questionFormatted;
-      // Model: 2020–2022
-      // answers.value = apiResponse.data?.choices[0]?.text.split('\n');
-      // Model: 2023-
-      answers.value = apiResponse.data?.choices[0]?.message?.content.split('\n');
-    }
-
-    isProcessing.value = false;
-  };
 </script>
 
 <template>
@@ -155,8 +89,8 @@
                   density="comfortable"
                   label="OpenAI Model"
                   variant="outlined"
-                  v-model="modelSelected"
-                  :items="Object.keys(availableModels)"
+                  v-model="openAI.state.modelSelected"
+                  :items="Object.keys(openAI.OPENAI_MODELS)"
                 >
                 </VSelect>
               </VCol>
@@ -189,7 +123,7 @@
           </VContainer>
 
           <!-- === Form that allows user to ask question === -->
-          <VForm validate-on="submit lazy" @submit.prevent="submit">
+          <VForm validate-on="submit lazy" @submit.prevent="openAI.submitForm">
             <!-- === Input Helper: (Default) === -->
             <!-- Textarea doc: https://vuetifyjs.com/en/components/textareas/ -->
             <VTextarea
@@ -200,7 +134,7 @@
               label="What is your question?"
               rows="3"
               variant="outlined"
-              v-model="form.questionFull"
+              v-model="openAI.state.form.questionComplete"
               v-if="helperInputTypeSelected === INPUT_HELPER_TYPE_DEFAULT"
               :rules="rulesNotEmpty"
             />
@@ -235,7 +169,7 @@
 
             <!-- For debug purpose, remove `d-none` to show -->
             <div class="pa-5 d-none">
-              questionFormatted: {{ questionFormatted }}
+              questionFormatted: {{ openAI.questionFormatted }}
             </div>
             <div class="pa-5 d-none">
               helperInputTypeSelected: {{ helperInputTypeSelected }}
@@ -247,8 +181,8 @@
               class="mt-2"
               color="green-darken-3"
               type="submit"
-              :disabled="isProcessing"
-              :loading="isProcessing"
+              :disabled="processing.isEventProcessing()"
+              :loading="processing.isEventProcessing()"
             >
               Submit
             </VBtn>
@@ -258,7 +192,7 @@
           <!-- Colors doc: https://vuetifyjs.com/en/styles/colors/ -->
           <VCard
             class="mt-5 bg-brown-darken-4"
-            v-show="!!questionWithAnswers"
+            v-show="!!openAI.state.questionWithAnswers"
           >
             <!-- Card Item doc: https://vuetifyjs.com/en/api/v-card-item/ -->
             <VCardItem
@@ -266,14 +200,14 @@
             >
               <!-- === Question entered by the user === -->
               <VCardTitle>
-                {{ questionWithAnswers }}
+                {{ openAI.state.questionWithAnswers }}
               </VCardTitle>
 
               <!-- === Button: Copy To Clipboard === -->
               <template v-slot:append>
                 <ButtonCopyToClipboard
                   buttonTextOriginal="Copy Response"
-                  :contentToCopy="answers"
+                  :contentToCopy="openAI.state.answersFromAI"
                 />
               </template>
             </VCardItem>
@@ -282,7 +216,7 @@
 
             <!-- === Answers === -->
             <VCardText class="d-flex flex-column">
-              <div v-for="(answer, index) in answers" :key="index" class="mt-2">
+              <div v-for="(answer, index) in openAI.state.answersFromAI" :key="index" class="mt-2">
                 <strong>{{ answer }}</strong>
               </div>
             </VCardText>
