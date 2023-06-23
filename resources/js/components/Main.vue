@@ -1,36 +1,23 @@
 <script setup>
-  import { defineAsyncComponent, ref, shallowRef } from 'vue';
+  import { ref } from 'vue';
   import { useRoute } from 'vue-router';
   import AppFooter from '@/components/AppFooter/index.vue';
   import AppHeader from '@/components/AppHeader/index.vue';
   import ScreenBreakpoints from '@/components/Debug/ScreenBreakpoints.vue';
   import ResultDisplay from '@/components/ResultDisplay.vue';
+  import useInputHelper from '@/composables/useInputHelper.js';
   import useOpenAI from '@/composables/useOpenAI.js';
   import useProcessing from '@/composables/useProcessing.js';
   import useUserSelection from '@/composables/useUserSelection.js';
   import { OPENAI_MODELS } from '@/utilities/constants.js';
 
+  const inputHelper = useInputHelper(useRoute());
   const openAI = useOpenAI();
   const processing = useProcessing();
-  const route = useRoute();
   const userSelection = useUserSelection();
 
   // === Data Variables ===
-  const inputHelperComponents = shallowRef([
-    {
-      name: 'Standard',
-      component: defineAsyncComponent(() => import('@/components/InputHelpers/Standard.vue')),
-    },
-  ]);
   const inputHelperComponentSelectedIndex = ref(0);
-
-  if (route.query?.helper === 'cl') {
-    // `?helper=cl`, supports Cover Letter
-    inputHelperComponents.value.push({
-      name: 'Cover Letter',
-      component: defineAsyncComponent(() => import('@/components/InputHelpers/CoverLetter.vue')),
-    });
-  }
 </script>
 
 <template>
@@ -77,7 +64,7 @@
               <VCol
                 cols="12"
                 sm="8"
-                v-if="inputHelperComponents.length > 1"
+                v-if="inputHelper.components.value.length > 1"
               >
                 <!-- Button Toggle doc: https://vuetifyjs.com/en/components/button-groups/ -->
                 <VBtnToggle
@@ -89,7 +76,7 @@
                   v-model="inputHelperComponentSelectedIndex"
                 >
                   <VBtn
-                    v-for="(inputHelperComponent, index) in inputHelperComponents"
+                    v-for="(inputHelperComponent, index) in inputHelper.components.value"
                     :key="index"
                     :value="index"
                   >
@@ -104,7 +91,7 @@
           <VForm validate-on="submit lazy" @submit.prevent="openAI.submitForm">
             <!-- === Input Helper Component === -->
             <component
-              :is="inputHelperComponents[inputHelperComponentSelectedIndex].component"
+              :is="inputHelper.components.value[inputHelperComponentSelectedIndex].component"
             />
 
             <!-- Button doc: https://vuetifyjs.com/en/components/buttons/ -->
