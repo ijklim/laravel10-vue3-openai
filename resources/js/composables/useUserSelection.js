@@ -1,4 +1,5 @@
 import { computed, reactive } from 'vue';
+import { cache } from '@/utilities/cache.js';
 import { OPENAI_MODELS } from '@/utilities/constants.js';
 
 const state = reactive({
@@ -7,16 +8,6 @@ const state = reactive({
 });
 
 export default () => {
-  // === Methods ===
-  const cache = {
-    get: (key, defaultValue = null) => {
-      return localStorage.getItem(key) || defaultValue;
-    },
-    store: (key, value) => {
-      localStorage.setItem(key, value);
-    },
-  };
-
   // === Computed Fields ===
   const activeOpenAIModelKey = computed({
     get() {
