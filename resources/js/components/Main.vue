@@ -1,5 +1,4 @@
 <script setup>
-  import { ref } from 'vue';
   import AppFooter from '@/components/AppFooter/index.vue';
   import AppHeader from '@/components/AppHeader/index.vue';
   import ScreenBreakpoints from '@/components/Debug/ScreenBreakpoints.vue';
@@ -8,12 +7,16 @@
   import useOpenAI from '@/composables/useOpenAI.js';
   import useProcessing from '@/composables/useProcessing.js';
   import useUserSelection from '@/composables/useUserSelection.js';
-  import { OPENAI_MODELS } from '@/utilities/constants.js';
 
   const inputHelper = useInputHelper();
   const openAI = useOpenAI();
   const processing = useProcessing();
   const userSelection = useUserSelection();
+
+  // === Debug Info ===
+  // console.log(`[${import.meta.url.split('?')[0].split('/').slice(3).join('/')}] userSelection.activeInputHelperIndex.value`, userSelection.activeInputHelperIndex.value);
+  // console.log(`[${import.meta.url.split('?')[0].split('/').slice(3).join('/')}] userSelection.activeOpenAIModelKey.value`, userSelection.activeOpenAIModelKey.value);
+  // console.log(`[${import.meta.url.split('?')[0].split('/').slice(3).join('/')}] userSelection.availableOpenAIModelKeys.value`, userSelection.availableOpenAIModelKeys.value);
 </script>
 
 <template>
@@ -51,7 +54,7 @@
                   label="OpenAI Model"
                   variant="outlined"
                   v-model="userSelection.activeOpenAIModelKey"
-                  :items="Object.keys(OPENAI_MODELS)"
+                  :items="userSelection.availableOpenAIModelKeys.value"
                 >
                 </VSelect>
               </VCol>

@@ -35,6 +35,11 @@ export default () => {
     },
   });
 
+  /**
+   * The currently selected OpenAI model key, e.g. gpt-3.5-turbo
+   *
+   * @returns {string}
+   */
   const activeOpenAIModelKey = computed({
     get() {
       if (state.activeOpenAIModelKey) {
@@ -43,10 +48,12 @@ export default () => {
 
       // Get active model from cache
       const cachedOpenAIModelKey = cache.get('activeOpenAIModelKey', '');
+
+      // Note: Check to ensure the cached key is still in the list of available keys
       // console.log('[activeOpenAIModelKey::get()] cachedOpenAIModelKey', cachedOpenAIModelKey);
 
       // Note: Check to ensure the cached key is still valid
-      return OPENAI_MODELS[cachedOpenAIModelKey] ? cachedOpenAIModelKey : Object.keys(OPENAI_MODELS)[0];
+      return availableOpenAIModelKeys.value.includes(cachedOpenAIModelKey) ? cachedOpenAIModelKey : availableOpenAIModelKeys.value[0];
     },
     set(value) {
       state.activeOpenAIModelKey = value;
@@ -55,9 +62,25 @@ export default () => {
     },
   });
 
+  /**
+   * Only models with the same request type as the input helper is available for selection
+   *
+   * @returns {Array}
+   */
+  const availableOpenAIModelKeys = computed(() => {
+    // Initialize inputHelper composable if necessary
+    inputHelper = inputHelper ?? useInputHelper();
+
+    return Object.keys(OPENAI_MODELS)
+      .filter((openAIModelKey) => {
+        return OPENAI_MODELS[openAIModelKey].requestType === inputHelper.components.value[activeInputHelperIndex.value].requestType;
+      });
+  });
+
 
   return {
     activeInputHelperIndex,
     activeOpenAIModelKey,
+    availableOpenAIModelKeys,
   }
 };
