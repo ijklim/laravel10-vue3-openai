@@ -1,6 +1,5 @@
 <script setup>
   import { ref } from 'vue';
-  import { useRoute } from 'vue-router';
   import AppFooter from '@/components/AppFooter/index.vue';
   import AppHeader from '@/components/AppHeader/index.vue';
   import ScreenBreakpoints from '@/components/Debug/ScreenBreakpoints.vue';
@@ -11,13 +10,10 @@
   import useUserSelection from '@/composables/useUserSelection.js';
   import { OPENAI_MODELS } from '@/utilities/constants.js';
 
-  const inputHelper = useInputHelper(useRoute());
+  const inputHelper = useInputHelper();
   const openAI = useOpenAI();
   const processing = useProcessing();
   const userSelection = useUserSelection();
-
-  // === Data Variables ===
-  const inputHelperComponentSelectedIndex = ref(0);
 </script>
 
 <template>
@@ -73,7 +69,7 @@
                   mandatory
                   outlined
                   rounded="lg"
-                  v-model="inputHelperComponentSelectedIndex"
+                  v-model="userSelection.activeInputHelperIndex.value"
                 >
                   <VBtn
                     v-for="(inputHelperComponent, index) in inputHelper.components.value"
@@ -91,7 +87,7 @@
           <VForm validate-on="submit lazy" @submit.prevent="openAI.submitForm">
             <!-- === Input Helper Component === -->
             <component
-              :is="inputHelper.components.value[inputHelperComponentSelectedIndex].component"
+              :is="inputHelper.components.value[userSelection.activeInputHelperIndex.value].component"
             />
 
             <!-- Button doc: https://vuetifyjs.com/en/components/buttons/ -->
