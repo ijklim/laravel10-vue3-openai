@@ -1,5 +1,6 @@
 <script setup>
   import ButtonCopyToClipboard from '@/components/ButtonCopyToClipboard/index.vue';
+  import ButtonDownloadImage from '@/components/ButtonDownloadImage/index.vue';
   import useOpenAI from '@/composables/useOpenAI.js';
   import { OPENAI_REQUEST_TYPES } from '@/utilities/constants.js';
 
@@ -28,6 +29,13 @@
           :contentToCopy="openAI.state.responseFromAI.answers"
         />
       </template>
+
+      <!-- === Button: Download Image === -->
+      <template v-slot:append v-if="openAI.state.responseFromAI.canBeDownloaded">
+        <ButtonDownloadImage
+          :base64ImageToDownload="openAI.state.responseFromAI.image.src"
+        />
+      </template>
     </VCardItem>
 
     <VDivider />
@@ -49,11 +57,19 @@
       class="d-flex justify-center"
       v-if="openAI.state.responseFromAI.requestType === OPENAI_REQUEST_TYPES.IMAGE"
     >
-      <img
+      <!-- With Base64 image src, it can be downloaded without CORS issue -->
+      <a :href="openAI.state.responseFromAI.image.src" download>
+        <img
         :height="openAI.state.responseFromAI.image.height"
-        :src="openAI.state.responseFromAI.image.url"
+        :src="openAI.state.responseFromAI.image.src"
         :width="openAI.state.responseFromAI.image.width"
-      />
+        />
+
+        <!-- Tooltip doc: https://vuetifyjs.com/en/api/v-tooltip/ -->
+        <VTooltip activator="parent" theme="light">
+          Click to download
+        </VTooltip>
+      </a>
     </VCardText>
   </VCard>
 </template>

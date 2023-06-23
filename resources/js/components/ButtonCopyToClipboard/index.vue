@@ -2,7 +2,7 @@
   <VBtn
     color="info"
     prepend-icon="mdi-content-copy"
-    @click="handleCopy"
+    @click="handleClick"
   >
     {{ buttonText ?? buttonTextOriginal }}
   </VBtn>
@@ -28,17 +28,17 @@ export default {
     }
   },
   methods: {
-    handleCopy() {
+    handleClick() {
       this.buttonText = 'Copying...';
 
       // Note: isProxy is provided by Vue3 to work with ref object
       let content = isProxy(this.contentToCopy) ? toRaw(this.contentToCopy) : this.contentToCopy;
       if (Array.isArray(content)) {
-        // console.log(`[${import.meta.url.split('?')[0].split('/').slice(3).join('/')}::handleCopy()] content`, content);
+        // console.log(`[${import.meta.url.split('?')[0].split('/').slice(3).join('/')}::handleClick()] content`, content);
         content = content.join("\n");
       }
       navigator.clipboard.writeText(content);
-      // console.log(`[${import.meta.url.split('?')[0].split('/').slice(3).join('/')}::handleCopy()] this.contentToCopy`, this.contentToCopy);
+      // console.log(`[${import.meta.url.split('?')[0].split('/').slice(3).join('/')}::handleClick()] this.contentToCopy`, this.contentToCopy);
 
       this.buttonText = 'Copyied!';
 

@@ -3,7 +3,7 @@ import { OPENAI_MODELS } from '@/utilities/constants.js';
 
 const state = reactive({
   // e.g. gpt-3.5-turbo, gpt-3.5-turbo-0301
-  selectedOpenAIModelKey: null,
+  activeOpenAIModelKey: null,
 });
 
 export default () => {
@@ -20,8 +20,8 @@ export default () => {
   // === Computed Fields ===
   const activeOpenAIModelKey = computed({
     get() {
-      if (state.selectedOpenAIModelKey) {
-        return state.selectedOpenAIModelKey;
+      if (state.activeOpenAIModelKey) {
+        return state.activeOpenAIModelKey;
       }
 
       // Get active model from cache
@@ -31,7 +31,7 @@ export default () => {
       return OPENAI_MODELS[cachedOpenAIModelKey] ? cachedOpenAIModelKey : Object.keys(OPENAI_MODELS)[0];
     },
     set(value) {
-      state.selectedOpenAIModelKey = value;
+      state.activeOpenAIModelKey = value;
       // Cache activeOpenAIModelKey
       cache.store('activeOpenAIModelKey', value);
     },

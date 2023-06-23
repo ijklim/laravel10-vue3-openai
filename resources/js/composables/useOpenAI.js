@@ -59,6 +59,8 @@ export default () => {
           // Currently only support 1 image per call
           n: 1,
           prompt: questionFormatted.value,
+          // b64_json supports download without CORS issue
+          response_format: 'b64_json',
           size: state.form.imageSize,
         };
     }
@@ -109,10 +111,12 @@ export default () => {
         case OPENAI_REQUEST_TYPES.IMAGE:
           state.responseFromAI.image = {
             height: state.form.imageSize.split('x')[1],
-            url: apiResponse.data?.data[0]?.url,
+            // Note: `url` is returned when response_format is 'url'
+            src: apiResponse.data?.data[0]?.url || `data:image/png;base64, ${apiResponse.data?.data[0]?.b64_json}`,
             width: state.form.imageSize.split('x')[0],
           };
           state.responseFromAI.canBeCopiedToClipboard = false;
+          state.responseFromAI.canBeDownloaded = true;
           break;
       }
 
