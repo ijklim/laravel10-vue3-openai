@@ -4,11 +4,10 @@
   import { IMAGE_SIZES } from '@/utilities/constants.js';
   import { FORM_INPUT_RULES } from '@/utilities/formInputRules.js';
 
-  const componentName = import.meta.url.match(/[^\/]+\.vue/i)[0];
-  // console.log(`[${componentName}]`);
 
   // === Composables ===
   const openAI = useOpenAI();
+
 
   // === Data Fields ===
   const form = reactive({

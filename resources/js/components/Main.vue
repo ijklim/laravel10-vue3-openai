@@ -8,10 +8,12 @@
   import useProcessing from '@/composables/useProcessing.js';
   import useUserSelection from '@/composables/useUserSelection.js';
 
+
   const inputHelper = useInputHelper();
   const openAI = useOpenAI();
   const processing = useProcessing();
   const userSelection = useUserSelection();
+
 
   // === Debug Info ===
   // console.log(`[${import.meta.url.split('?')[0].split('/').slice(3).join('/')}] userSelection.activeInputHelperIndex.value`, userSelection.activeInputHelperIndex.value);

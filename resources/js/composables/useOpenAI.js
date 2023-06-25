@@ -4,6 +4,7 @@
 import { computed, reactive } from 'vue';
 import useProcessing from '@/composables/useProcessing.js';
 import useUserSelection from '@/composables/useUserSelection.js';
+import useUtility from '@/composables/useUtility.js';
 import { cache } from '@/utilities/cache.js';
 import {
   OPENAI_MODELS,
@@ -12,7 +13,11 @@ import {
   RESPONSE_DEFAULT
 } from '@/utilities/constants.js';
 
-const moduleName = import.meta.url.match(/[^\/]+\.js/i)[0];
+
+// === Composables ===
+const userSelection = useUserSelection();
+const utility = useUtility(import.meta);
+
 
 const state = reactive({
   answersFromAI: [],
@@ -24,11 +29,11 @@ const state = reactive({
   responseFromAI: JSON.parse(JSON.stringify(RESPONSE_DEFAULT)),
 });
 
-const userSelection = useUserSelection();
 
 export default () => {
   // === Computed Fields ===
-  const cacheKeyImageSize = `${moduleName}__imageSize`;
+  const cacheKeyImageSize = `${utility.cacheKeyPrefix}__imageSize`;
+  // console.log(`[${utility.currentFileName}] cacheKeyImageSize: `, cacheKeyImageSize);
   /**
    * Image size parameter for Image Generation
    */
@@ -40,7 +45,7 @@ export default () => {
 
       // Get active index from cache
       const cachedImageSize = cache.get(cacheKeyImageSize, IMAGE_SIZES[0]);
-      // console.log(`[${componentName}::computed::imageSize] cachedImageSize`, cachedImageSize);
+      // console.log(`[${utility.currentFileName}::computed::imageSize] cachedImageSize`, cachedImageSize);
 
       // Note: Check to ensure the cached key is still valid
       return IMAGE_SIZES.includes(cachedImageSize) ? cachedImageSize : IMAGE_SIZES[0];
@@ -126,7 +131,9 @@ export default () => {
     const apiResponse = await axios.post('/api/openai/post', payload);
     // Sample apiResponse: { id: "...", choices: [{ text: "..."}], model: "...", object: "...", usage: {} }
     if (apiResponse.status === 200) {
-      if (apiResponse?.data?.data?.length) {
+      if (apiResponse?.error) {
+        alert(`Error encountered: ${apiResponse.error?.message}`);
+      } else if (apiResponse?.data) {
         // Expect response is returned
         state.responseFromAI.prompt = questionFormatted.value;
         state.responseFromAI.requestType = OPENAI_MODELS[userSelection.activeOpenAIModelKey.value].requestType;
@@ -141,7 +148,7 @@ export default () => {
             state.responseFromAI.image = {
               height: null,
               // Note: `url` is returned when response_format is 'url'
-              src: apiResponse.data.data[0]?.url || `data:image/png;base64, ${apiResponse.data.data[0]?.b64_json}`,
+              src: apiResponse.data?.data[0]?.url || `data:image/png;base64, ${apiResponse.data.data[0]?.b64_json}`,
               width: null,
             };
             state.responseFromAI.canBeCopiedToClipboard = false;
@@ -150,10 +157,6 @@ export default () => {
         }
 
         state.responseFromAI.isDisplayReady = true;
-      }
-
-      if (apiResponse?.error) {
-        alert(`Error encountered: ${apiResponse.error?.message}`);
       }
     }
 

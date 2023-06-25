@@ -1,10 +1,13 @@
 import { computed, reactive } from 'vue';
 import useInputHelper from '@/composables/useInputHelper.js';
+import useUtility from '@/composables/useUtility.js';
 import { cache } from '@/utilities/cache.js';
 import { OPENAI_MODELS } from '@/utilities/constants.js';
 
-const moduleName = import.meta.url.match(/[^\/]+\.js/i)[0];
-// console.log(`[${moduleName}]`);
+
+// === Composables ===
+const utility = useUtility(import.meta);
+
 
 // Note: Initializing here will cause error `inject() can only be used inside setup() or functional components.`
 let inputHelper = null;
@@ -18,7 +21,7 @@ const state = reactive({
 
 export default () => {
   // === Computed Fields ===
-  const cacheKeyActiveInputHelperIndex = `${moduleName}__activeInputHelperIndex`;
+  const cacheKeyActiveInputHelperIndex = `${utility.cacheKeyPrefix}__activeInputHelperIndex`;
   const activeInputHelperIndex = computed({
     get() {
       if (state.activeInputHelperIndex) {
@@ -40,7 +43,7 @@ export default () => {
     },
   });
 
-  const cacheKeyActiveOpenAIModelKey = `${moduleName}__activeOpenAIModelKey`;
+  const cacheKeyActiveOpenAIModelKey = `${utility.cacheKeyPrefix}__activeOpenAIModelKey`;
   /**
    * The currently selected OpenAI model key, e.g. gpt-3.5-turbo
    *
@@ -54,9 +57,6 @@ export default () => {
 
       // Get active model from cache
       const cachedOpenAIModelKey = cache.get(cacheKeyActiveOpenAIModelKey, '');
-
-      // Note: Check to ensure the cached key is still in the list of available keys
-      // console.log('[activeOpenAIModelKey::get()] cachedOpenAIModelKey', cachedOpenAIModelKey);
 
       // Note: Check to ensure the cached key is still valid
       return availableOpenAIModelKeys.value.includes(cachedOpenAIModelKey) ? cachedOpenAIModelKey : availableOpenAIModelKeys.value[0];
