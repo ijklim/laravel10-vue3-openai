@@ -116,7 +116,7 @@
     </VMain>
 
     <!-- === Footer === -->
-    <AppFooter />
+    <AppFooter :additionalPackages="['Vuetify 3']" />
   </VApp>
 </template>
 

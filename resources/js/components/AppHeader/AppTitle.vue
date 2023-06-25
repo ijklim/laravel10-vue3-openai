@@ -1,18 +1,10 @@
 <script setup>
-  import { packages, version } from '@/utilities/constants.js';
-
-  defineProps({
-    additionalPackages: {
-      type: Array,
-      default: () => [],
-    },
-  })
+  import { name, version } from '@/utilities/constants.js';
 </script>
 
 <template>
   <h1>
-    <!-- Combine packages into comma separated string -->
-    {{ packages.concat(additionalPackages).join(', ') }}
+    {{ name }}
     <small>v.{{ version }}</small>
   </h1>
 </template>

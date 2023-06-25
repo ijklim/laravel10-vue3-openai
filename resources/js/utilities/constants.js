@@ -1,11 +1,13 @@
 // === App Specific Info ===
+export const name = 'AI Toolbox';
+
 export const packages = [
   'Laravel 10',
   'Vite 4',
   'OpenAI 3',
 ];
 
-export const version = '1.3.17';
+export const version = '1.4.0';
 
 
 // === OpenAI Info ===

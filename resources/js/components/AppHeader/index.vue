@@ -4,6 +4,6 @@
 
 <template>
   <VAppBar class="pl-5">
-    <AppTitle :additionalPackages="['Vuetify 3']" />
+    <AppTitle />
   </VAppBar>
 </template>
