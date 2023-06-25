@@ -139,8 +139,10 @@ export default () => {
     const apiResponse = await axios.post('/api/openai/post', payload);
     // Sample apiResponse: { id: "...", choices: [{ text: "..."}], model: "...", object: "...", usage: {} }
     if (apiResponse.status === 200) {
-      if (apiResponse?.error) {
-        alert(`Error encountered: ${apiResponse.error?.message}`);
+      // console.log(`[${utility.currentFileName}::submitForm()] apiResponse: `, apiResponse);
+
+      if (apiResponse?.data?.error) {
+        alert(`Error encountered: ${apiResponse.data.error?.message}`);
       } else if (apiResponse?.data) {
         // Expect response is returned
         state.responseFromAI.prompt = questionFormatted.value;
