@@ -50,12 +50,13 @@
               >
                 <!-- Selects doc: https://vuetifyjs.com/en/components/selects/ -->
                 <!-- Note: The gap below is taken up by .v-input__details:grid-area for error message -->
+                <!-- Important: v-model must use .value for computed field -->
                 <VSelect
                   bg-color="deep-purple-accent-3"
                   density="comfortable"
                   label="OpenAI Model"
                   variant="outlined"
-                  v-model="userSelection.activeOpenAIModelKey"
+                  v-model="userSelection.activeOpenAIModelKey.value"
                   :items="userSelection.availableOpenAIModelKeys.value"
                 >
                 </VSelect>

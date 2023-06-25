@@ -19,6 +19,10 @@ const userSelection = useUserSelection();
 const utility = useUtility(import.meta);
 
 
+// For testing purpose
+// console.log(`[${utility.currentFileName}] (Outside Export) Running...`);
+
+
 const state = reactive({
   answersFromAI: [],
   form: {
@@ -31,6 +35,10 @@ const state = reactive({
 
 
 export default () => {
+  // For testing purpose
+  // console.log(`[${utility.currentFileName}] (Inside Export) Running...`);
+
+
   // === Computed Fields ===
   const cacheKeyImageSize = `${utility.cacheKeyPrefix}__imageSize`;
   // console.log(`[${utility.currentFileName}] cacheKeyImageSize: `, cacheKeyImageSize);
@@ -162,6 +170,7 @@ export default () => {
 
     processing.clearEvent(eventCode);
   };
+
 
   return {
     imageSize,
