@@ -1,13 +1,20 @@
 <script setup>
-  import { reactive,watchEffect } from 'vue';
+  import { reactive, watchEffect } from 'vue';
   import useOpenAI from '@/composables/useOpenAI.js';
+  import { IMAGE_SIZES } from '@/utilities/constants.js';
   import { FORM_INPUT_RULES } from '@/utilities/formInputRules.js';
 
+  const componentName = import.meta.url.match(/[^\/]+\.vue/i)[0];
+  // console.log(`[${componentName}]`);
+
+  // === Composables ===
   const openAI = useOpenAI();
 
+  // === Data Fields ===
   const form = reactive({
     imageDescription: '',
   });
+
 
   // === Watcher ===
   watchEffect(() => {
@@ -24,6 +31,27 @@
 </script>
 
 <template>
+  <VContainer class="pa-3 pt-0 mb-3">
+    <VRow>
+      <VBtnToggle
+        color="blue-darken-4"
+        divided
+        mandatory
+        outlined
+        rounded="lg"
+        v-model="openAI.imageSize.value"
+      >
+        <VBtn
+          v-for="(availableImageSize, index) in IMAGE_SIZES"
+          :key="index"
+          :value="availableImageSize"
+        >
+          {{ availableImageSize }}
+        </VBtn>
+      </VBtnToggle>
+    </VRow>
+  </VContainer>
+
   <VTextarea
     auto-grow
     clearable

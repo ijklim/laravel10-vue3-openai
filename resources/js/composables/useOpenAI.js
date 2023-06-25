@@ -4,6 +4,7 @@
 import { computed, reactive } from 'vue';
 import useProcessing from '@/composables/useProcessing.js';
 import useUserSelection from '@/composables/useUserSelection.js';
+import { cache } from '@/utilities/cache.js';
 import {
   OPENAI_MODELS,
   OPENAI_REQUEST_TYPES,
@@ -11,10 +12,12 @@ import {
   RESPONSE_DEFAULT
 } from '@/utilities/constants.js';
 
+const moduleName = import.meta.url.match(/[^\/]+\.js/i)[0];
+
 const state = reactive({
   answersFromAI: [],
   form: {
-    imageSize: IMAGE_SIZES[0],
+    imageSize: null,
     questionComplete: '',
   },
   messageSystem: null,
@@ -25,6 +28,30 @@ const userSelection = useUserSelection();
 
 export default () => {
   // === Computed Fields ===
+  const cacheKeyImageSize = `${moduleName}__imageSize`;
+  /**
+   * Image size parameter for Image Generation
+   */
+  const imageSize = computed({
+    get() {
+      if (state.form.imageSize) {
+        return state.form.imageSize;
+      }
+
+      // Get active index from cache
+      const cachedImageSize = cache.get(cacheKeyImageSize, IMAGE_SIZES[0]);
+      // console.log(`[${componentName}::computed::imageSize] cachedImageSize`, cachedImageSize);
+
+      // Note: Check to ensure the cached key is still valid
+      return IMAGE_SIZES.includes(cachedImageSize) ? cachedImageSize : IMAGE_SIZES[0];
+    },
+    set(value) {
+      state.form.imageSize = value;
+      // Cache setting
+      cache.store(cacheKeyImageSize, value);
+    },
+  });
+
   const questionFormatted = computed(() => {
     // Condense multiple spaces and non word characters
     const patternCharsToReplaceWithSpace = /([^A-Za-z0-9_'":;])+/g;
@@ -61,7 +88,7 @@ export default () => {
           prompt: questionFormatted.value,
           // b64_json supports download without CORS issue
           response_format: 'b64_json',
-          size: state.form.imageSize,
+          size: imageSize.value,
         };
     }
 
@@ -99,34 +126,42 @@ export default () => {
     const apiResponse = await axios.post('/api/openai/post', payload);
     // Sample apiResponse: { id: "...", choices: [{ text: "..."}], model: "...", object: "...", usage: {} }
     if (apiResponse.status === 200) {
-      state.responseFromAI.prompt = questionFormatted.value;
-      state.responseFromAI.requestType = OPENAI_MODELS[userSelection.activeOpenAIModelKey.value].requestType;
+      if (apiResponse?.data?.data?.length) {
+        // Expect response is returned
+        state.responseFromAI.prompt = questionFormatted.value;
+        state.responseFromAI.requestType = OPENAI_MODELS[userSelection.activeOpenAIModelKey.value].requestType;
 
-      switch (state.responseFromAI.requestType) {
-        // === Chat Completion ===
-        case OPENAI_REQUEST_TYPES.CHAT:
-          state.responseFromAI.answers = apiResponse.data?.choices[0]?.message?.content.split('\n');
-          break;
-        // === Image Generation ===
-        case OPENAI_REQUEST_TYPES.IMAGE:
-          state.responseFromAI.image = {
-            height: state.form.imageSize.split('x')[1],
-            // Note: `url` is returned when response_format is 'url'
-            src: apiResponse.data?.data[0]?.url || `data:image/png;base64, ${apiResponse.data?.data[0]?.b64_json}`,
-            width: state.form.imageSize.split('x')[0],
-          };
-          state.responseFromAI.canBeCopiedToClipboard = false;
-          state.responseFromAI.canBeDownloaded = true;
-          break;
+        switch (state.responseFromAI.requestType) {
+          // === Chat Completion ===
+          case OPENAI_REQUEST_TYPES.CHAT:
+            state.responseFromAI.answers = apiResponse.data?.choices[0]?.message?.content.split('\n');
+            break;
+          // === Image Generation ===
+          case OPENAI_REQUEST_TYPES.IMAGE:
+            state.responseFromAI.image = {
+              height: null,
+              // Note: `url` is returned when response_format is 'url'
+              src: apiResponse.data.data[0]?.url || `data:image/png;base64, ${apiResponse.data.data[0]?.b64_json}`,
+              width: null,
+            };
+            state.responseFromAI.canBeCopiedToClipboard = false;
+            state.responseFromAI.canBeDownloaded = true;
+            break;
+        }
+
+        state.responseFromAI.isDisplayReady = true;
       }
 
-      state.responseFromAI.isDisplayReady = true;
+      if (apiResponse?.error) {
+        alert(`Error encountered: ${apiResponse.error?.message}`);
+      }
     }
 
     processing.clearEvent(eventCode);
   };
 
   return {
+    imageSize,
     questionFormatted,
     state,
     submitForm,
