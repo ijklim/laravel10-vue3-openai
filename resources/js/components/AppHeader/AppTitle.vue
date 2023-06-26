@@ -12,7 +12,7 @@
 <style scoped>
   h1 {
     /* Dynamically adjust font based on screen width */
-    font-size: clamp(1rem, 4cqi, 1.5rem);
+    font-size: clamp(1rem, 4cqi, 1.4rem);
   }
 
   small {

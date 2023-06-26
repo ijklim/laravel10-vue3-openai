@@ -3,7 +3,7 @@
 </script>
 
 <template>
-  <VAppBar class="pl-5">
+  <VAppBar class="pl-5" density="compact">
     <AppTitle />
   </VAppBar>
 </template>
