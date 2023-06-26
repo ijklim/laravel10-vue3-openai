@@ -7,7 +7,7 @@ export const packages = [
   'OpenAI 3',
 ];
 
-export const version = '1.4.0';
+export const version = '1.4.2';
 
 
 // === OpenAI Info ===

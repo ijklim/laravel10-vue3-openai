@@ -66,7 +66,7 @@
         />
 
         <!-- Tooltip doc: https://vuetifyjs.com/en/api/v-tooltip/ -->
-        <VTooltip activator="parent" theme="light">
+        <VTooltip activator="parent" theme="light" location="top center">
           Click to download
         </VTooltip>
       </a>

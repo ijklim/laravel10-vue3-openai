@@ -30,7 +30,7 @@
 </script>
 
 <template>
-  <VContainer class="pa-3 pt-0 mb-3">
+  <VContainer fluid class="pa-3 pt-0 mb-3">
     <VRow>
       <VBtnToggle
         color="blue-darken-4"
