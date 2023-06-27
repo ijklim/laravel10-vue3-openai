@@ -1,7 +1,6 @@
 <script setup>
   import { reactive, watchEffect } from 'vue';
   import useOpenAI from '@/composables/useOpenAI.js';
-  import { IMAGE_SIZES } from '@/utilities/constants.js';
   import { FORM_INPUT_RULES } from '@/utilities/formInputRules.js';
 
 
@@ -30,27 +29,6 @@
 </script>
 
 <template>
-  <VContainer fluid class="pa-3 pt-0 mb-3">
-    <VRow>
-      <VBtnToggle
-        color="blue-darken-4"
-        divided
-        mandatory
-        outlined
-        rounded="lg"
-        v-model="openAI.imageSize.value"
-      >
-        <VBtn
-          v-for="(availableImageSize, index) in IMAGE_SIZES"
-          :key="index"
-          :value="availableImageSize"
-        >
-          {{ availableImageSize }}
-        </VBtn>
-      </VBtnToggle>
-    </VRow>
-  </VContainer>
-
   <VTextarea
     auto-grow
     clearable

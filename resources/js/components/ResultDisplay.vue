@@ -8,7 +8,6 @@
 </script>
 
 <template>
-  <!-- Colors doc: https://vuetifyjs.com/en/styles/colors/ -->
   <VCard
     class="mt-5 bg-brown-darken-4"
     v-if="openAI.state.responseFromAI.isDisplayReady"

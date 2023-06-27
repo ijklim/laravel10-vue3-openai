@@ -1,4 +1,5 @@
 <script setup>
+  import AppDrawer from '@/components/AppDrawer/index.vue';
   import AppFooter from '@/components/AppFooter/index.vue';
   import AppHeader from '@/components/AppHeader/index.vue';
   import ScreenBreakpoints from '@/components/Debug/ScreenBreakpoints.vue';
@@ -9,6 +10,7 @@
   import useUserSelection from '@/composables/useUserSelection.js';
 
 
+  // === Composables ===
   const inputHelper = useInputHelper();
   const openAI = useOpenAI();
   const processing = useProcessing();
@@ -26,12 +28,20 @@
   <!-- <ScreenBreakpoints /> -->
 
   <!-- Application Layout: https://vuetifyjs.com/en/features/application-layout/ -->
-  <VApp>
+  <!-- Note: VLayout comes with better documentation than VApp, does not work too well with VFooter. -->
+  <VLayout>
     <!-- === Header === -->
     <AppHeader />
 
+    <!-- === Footer === -->
+    <!-- Note: Affects the space Navigation Drawer takes if defined below -->
+    <AppFooter :additionalPackages="['Vuetify 3']" />
+
+    <!-- === Drawer (Side Menu) === -->
+    <AppDrawer />
+
     <!-- === Body === -->
-    <!-- VMain necessary to start content below AppHeader -->
+    <!-- VMain necessary to start content below AppHeader, part of Vuetify Application Layout -->
     <VMain class="">
       <VContainer fluid>
         <!-- Form doc: https://vuetifyjs.com/en/components/forms/ -->
@@ -96,7 +106,6 @@
             :is="inputHelper.components.value[userSelection.activeInputHelperIndex.value].component"
           />
 
-          <!-- Button doc: https://vuetifyjs.com/en/components/buttons/ -->
           <VBtn
             block
             class="mt-2"
@@ -113,9 +122,6 @@
         <ResultDisplay />
       </VContainer>
     </VMain>
-
-    <!-- === Footer === -->
-    <AppFooter :additionalPackages="['Vuetify 3']" />
-  </VApp>
+  </VLayout>
 </template>
 
