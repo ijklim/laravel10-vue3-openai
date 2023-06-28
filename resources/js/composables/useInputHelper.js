@@ -15,23 +15,25 @@ export default () => {
   components.value = [];
 
   // Build the list of available Input Helpers
+  // Note: If componentDrawer exists, it will be used in AppDrawer
   components.value.push({
-    name: 'Standard',
     component: defineAsyncComponent(() => import('@/components/InputHelpers/Standard.vue')),
+    name: 'Standard',
     requestType: OPENAI_REQUEST_TYPES.CHAT,
   });
 
   components.value.push({
-    name: 'Image Generator',
     component: defineAsyncComponent(() => import('@/components/InputHelpers/ImageGeneration.vue')),
+    componentDrawer: defineAsyncComponent(() => import('@/components/InputHelpers/ImageGenerationDrawer.vue')),
+    name: 'Image Generator',
     requestType: OPENAI_REQUEST_TYPES.IMAGE,
   });
 
   // Cover Letter is available if query string `?helper=cl` exists
   if (route?.query?.helper === 'cl') {
     components.value.push({
-      name: 'Cover Letter',
       component: defineAsyncComponent(() => import('@/components/InputHelpers/CoverLetter.vue')),
+      name: 'Cover Letter',
       requestType: OPENAI_REQUEST_TYPES.CHAT,
     });
   }

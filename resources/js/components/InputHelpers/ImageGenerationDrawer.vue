@@ -2,8 +2,13 @@
   import useOpenAI from '@/composables/useOpenAI.js';
   import { IMAGE_SIZES } from '@/utilities/constants.js';
 
+
   // === Composables ===
   const openAI = useOpenAI();
+
+
+  // === Computed ===
+  // todo: Add Image Styles (Digital Art, Anime, Acrylic, Oil Painting, Art Deco, Painting, Synthwave, Steampunk, Foggy Scenery, Photography, Vintage Photo)
 </script>
 
 <template>

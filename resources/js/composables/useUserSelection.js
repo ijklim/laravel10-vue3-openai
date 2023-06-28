@@ -1,4 +1,4 @@
-import { computed, reactive } from 'vue';
+import { computed, onBeforeMount, reactive } from 'vue';
 import useInputHelper from '@/composables/useInputHelper.js';
 import useUtility from '@/composables/useUtility.js';
 import { cache } from '@/utilities/cache.js';
@@ -10,7 +10,7 @@ const utility = useUtility(import.meta);
 
 
 // Note: Initializing here will cause error `inject() can only be used inside setup() or functional components.`
-let inputHelper = null;
+let inputHelper;
 
 
 const state = reactive({
@@ -21,14 +21,27 @@ const state = reactive({
 
 
 export default () => {
+  // === Lifecycle Hooks ===
+  onBeforeMount(() => {
+    // console.log(`[${utility.currentFileName}::onBeforeMount()]`);
+
+    // Initialize inputHelper composable if necessary
+    if (!inputHelper) {
+      // console.log(`[${utility.currentFileName}::onBeforeMount()] Initializing inputHelper`);
+      inputHelper = useInputHelper();
+    }
+  });
+
+
   // === Computed Fields ===
+  const activeInputHelper = computed(() => {
+    return inputHelper.components.value[activeInputHelperIndex.value];
+  });
+
   const cacheKeyActiveInputHelperIndex = `${utility.cacheKeyPrefix}__activeInputHelperIndex`;
   const activeInputHelperIndex = computed({
     get() {
       const index = state.activeInputHelperIndex || cache.get(cacheKeyActiveInputHelperIndex, 0);
-
-      // Initialize inputHelper composable if necessary
-      inputHelper = inputHelper ?? useInputHelper();
 
       // Note: Check to ensure the cached key is still valid
       return inputHelper.components.value[index] ? index : 0;
@@ -83,8 +96,6 @@ export default () => {
    * @returns {Array}
    */
   const availableOpenAIModelKeys = computed(() => {
-    // Initialize inputHelper composable if necessary
-    inputHelper = inputHelper ?? useInputHelper();
     const activeInputHelperRequestType = inputHelper.components.value[activeInputHelperIndex.value].requestType;
 
     const result = Object.keys(OPENAI_MODELS)
@@ -97,6 +108,7 @@ export default () => {
 
 
   return {
+    activeInputHelper,
     activeInputHelperIndex,
     activeOpenAIModelKey,
     availableOpenAIModelKeys,

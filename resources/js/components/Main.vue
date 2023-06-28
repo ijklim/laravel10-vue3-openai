@@ -103,7 +103,7 @@
         <VForm validate-on="submit lazy" @submit.prevent="openAI.submitForm">
           <!-- === Input Helper Component === -->
           <component
-            :is="inputHelper.components.value[userSelection.activeInputHelperIndex.value].component"
+            :is="userSelection.activeInputHelper.value.component"
           />
 
           <VBtn

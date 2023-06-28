@@ -1,7 +1,7 @@
 /**
  * Data in this module is format ready to be sent to OpenAI api
  */
-import { computed, reactive } from 'vue';
+import { computed, onBeforeMount, reactive } from 'vue';
 import useProcessing from '@/composables/useProcessing.js';
 import useUserSelection from '@/composables/useUserSelection.js';
 import useUtility from '@/composables/useUtility.js';
@@ -15,7 +15,7 @@ import {
 
 
 // === Composables ===
-const userSelection = useUserSelection();
+let userSelection;
 const utility = useUtility(import.meta);
 
 
@@ -37,6 +37,18 @@ const state = reactive({
 export default () => {
   // For testing purpose
   // console.log(`[${utility.currentFileName}] (Inside Export) Running...`);
+
+
+  // === Lifecycle Hooks ===
+  onBeforeMount(() => {
+    // console.log(`[${utility.currentFileName}::onBeforeMount()]`);
+
+    // Initialize inputHelper composable if necessary
+    if (!userSelection) {
+      // console.log(`[${utility.currentFileName}::onBeforeMount()] Initializing userSelection`);
+      userSelection = useUserSelection();
+    }
+  });
 
 
   // === Computed Fields ===
