@@ -7,6 +7,12 @@
 
 <template>
   <!-- === Input Helper: (Default) === -->
+  <VTextField
+    label="Which type of specialist would you like to communicate with?"
+    v-model="openAI.state.form.roleAI"
+    :rules="FORM_INPUT_RULES.NOT_EMPTY"
+  />
+
   <!-- Textarea doc: https://vuetifyjs.com/en/components/textareas/ -->
   <VTextarea
     auto-grow

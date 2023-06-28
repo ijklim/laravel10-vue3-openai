@@ -23,8 +23,8 @@ export default () => {
   });
 
   components.value.push({
-    component: defineAsyncComponent(() => import('@/components/InputHelpers/ImageGeneration.vue')),
-    componentDrawer: defineAsyncComponent(() => import('@/components/InputHelpers/ImageGenerationDrawer.vue')),
+    component: defineAsyncComponent(() => import('@/components/InputHelpers/ImageGeneration/index.vue')),
+    componentDrawer: defineAsyncComponent(() => import('@/components/InputHelpers/ImageGeneration/Drawer.vue')),
     name: 'Image Generator',
     requestType: OPENAI_REQUEST_TYPES.IMAGE,
   });

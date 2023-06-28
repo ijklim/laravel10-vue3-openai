@@ -14,8 +14,6 @@
   // === Watcher ===
   watchEffect(() => {
     if (!form.position || !form.company || !form.jobDescription) {
-      // Revert system message to default
-      openAI.state.messageSystem = null;
       return;
     }
 
@@ -24,7 +22,7 @@
       job description "${form.jobDescription}".
       Write cover letter.
     `;
-    openAI.state.messageSystem = 'You are a brilliant intelligent creative resume writer.';
+    openAI.state.form.roleAI = 'a brilliant intelligent creative resume writer.';
   });
 </script>
 

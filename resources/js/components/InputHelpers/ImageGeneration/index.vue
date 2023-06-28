@@ -17,8 +17,6 @@
   // === Watcher ===
   watchEffect(() => {
     if (!form.imageDescription) {
-      // Revert system message to default
-      openAI.state.messageSystem = null;
       return;
     }
 

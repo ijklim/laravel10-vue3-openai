@@ -7,7 +7,7 @@ export const packages = [
   'OpenAI 3',
 ];
 
-export const version = '1.5.0';
+export const version = '1.5.3';
 
 
 // === OpenAI Info ===
@@ -46,3 +46,5 @@ export const RESPONSE_DEFAULT = Object.freeze({
   prompt: null,
   requestType: null,
 });
+
+export const ROLE_AI_DEFAULT = 'a helpful assistant';

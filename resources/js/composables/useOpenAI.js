@@ -7,10 +7,11 @@ import useUserSelection from '@/composables/useUserSelection.js';
 import useUtility from '@/composables/useUtility.js';
 import { cache } from '@/utilities/cache.js';
 import {
+  IMAGE_SIZES,
   OPENAI_MODELS,
   OPENAI_REQUEST_TYPES,
-  IMAGE_SIZES,
-  RESPONSE_DEFAULT
+  RESPONSE_DEFAULT,
+  ROLE_AI_DEFAULT
 } from '@/utilities/constants.js';
 
 
@@ -26,10 +27,10 @@ const utility = useUtility(import.meta);
 const state = reactive({
   answersFromAI: [],
   form: {
+    roleAI: ROLE_AI_DEFAULT,
     imageSize: null,
     questionComplete: '',
   },
-  messageSystem: null,
   responseFromAI: JSON.parse(JSON.stringify(RESPONSE_DEFAULT)),
 });
 
@@ -97,7 +98,7 @@ export default () => {
           messages: [
             {
               role: 'system',
-              content: state.messageSystem ?? 'You are a helpful assistant',
+              content: `You are ${state.form.roleAI}`,
             },
             {
               role: 'user',
