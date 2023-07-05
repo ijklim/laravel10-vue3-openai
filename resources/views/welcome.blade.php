@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>Laravel 10, Vite 4, Vue 3, Vue Router 4</title>
+        <title>AI Toolbox</title>
 
         <!-- === Fonts === -->
         <link rel="preconnect" href="https://fonts.bunny.net">
