@@ -12,5 +12,5 @@ export default (importMeta) => {
   return {
     cacheKeyPrefix,
     currentFileName,
-  }
+  };
 };

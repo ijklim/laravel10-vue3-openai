@@ -44,10 +44,8 @@
     <!-- VMain necessary to start content below AppHeader, part of Vuetify Application Layout -->
     <VMain class="">
       <VContainer fluid>
-        <!-- Form doc: https://vuetifyjs.com/en/components/forms/ -->
         <!-- Sizing doc: https://vuetifyjs.com/en/styles/sizing/ -->
         <!-- Column Breakpoint doc: https://vuetifyjs.com/en/api/v-col/ -->
-        <!-- Flex doc: https://vuetifyjs.com/en/styles/flex/ -->
 
         <!-- === Customization Panel === -->
         <!-- no-gutters: Reduce the gaps between vertically stacked VCols on small screen  -->
