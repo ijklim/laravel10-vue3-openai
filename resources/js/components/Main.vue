@@ -1,4 +1,5 @@
 <script setup>
+  import GoogleAdSense from '@/components/ads/GoogleAdSense.vue';
   import AppDrawer from '@/components/AppDrawer/index.vue';
   import AppFooter from '@/components/AppFooter/index.vue';
   import AppHeader from '@/components/AppHeader/index.vue';
@@ -15,12 +16,6 @@
   const openAI = useOpenAI();
   const processing = useProcessing();
   const userSelection = useUserSelection();
-
-
-  // === Debug Info ===
-  // console.log(`[${import.meta.url.split('?')[0].split('/').slice(3).join('/')}] userSelection.activeInputHelperIndex.value`, userSelection.activeInputHelperIndex.value);
-  // console.log(`[${import.meta.url.split('?')[0].split('/').slice(3).join('/')}] userSelection.activeOpenAIModelKey.value`, userSelection.activeOpenAIModelKey.value);
-  // console.log(`[${import.meta.url.split('?')[0].split('/').slice(3).join('/')}] userSelection.availableOpenAIModelKeys.value`, userSelection.availableOpenAIModelKeys.value);
 </script>
 
 <template>
@@ -118,6 +113,17 @@
 
         <!-- === Results from OpenAI === -->
         <ResultDisplay />
+
+        <!-- === Google AdSense Type: In-feed === -->
+        <VRow no-gutters class="my-5">
+          <VCol cols="12" class="text-center">
+            <GoogleAdSense
+              adFormat="fluid"
+              adLayoutKey="-fb+5w+4e-db+86"
+              :adSlot="7471404401"
+            />
+          </VCol>
+        </VRow>
       </VContainer>
     </VMain>
   </VLayout>

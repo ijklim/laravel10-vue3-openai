@@ -17,7 +17,7 @@
 
   small {
     /* Font size base on parent's font size */
-    font-size: 70%;
+    font-size: 50%;
     font-style: italic;
   }
 </style>

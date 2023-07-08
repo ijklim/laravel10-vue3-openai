@@ -1,5 +1,5 @@
 <script setup>
-  import { reactive,watchEffect } from 'vue';
+  import { reactive, watchEffect } from 'vue';
   import useOpenAI from '@/composables/useOpenAI.js';
   import { FORM_INPUT_RULES } from '@/utilities/formInputRules.js';
 
