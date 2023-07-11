@@ -116,8 +116,9 @@
 
         <!-- === Google AdSense Type: In-feed === -->
         <VRow no-gutters class="my-5">
+          <!-- Note: Both `mx-auto text-center` are needed for best placements when screen is resized -->
           <VCol
-            class="text-center"
+            class="mx-auto text-center"
             cols="12"
             md="8"
             lg="6"
