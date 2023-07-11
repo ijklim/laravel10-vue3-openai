@@ -116,7 +116,12 @@
 
         <!-- === Google AdSense Type: In-feed === -->
         <VRow no-gutters class="my-5">
-          <VCol cols="12" class="text-center">
+          <VCol
+            class="text-center"
+            cols="12"
+            md="8"
+            lg="6"
+          >
             <GoogleAdSense
               adFormat="fluid"
               adLayoutKey="-fb+5w+4e-db+86"
