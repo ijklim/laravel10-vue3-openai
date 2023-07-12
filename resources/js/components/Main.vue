@@ -1,5 +1,5 @@
 <script setup>
-  import GoogleAdSense from '@/components/ads/GoogleAdSense.vue';
+  import Ads from '@/components/ads/index.vue';
   import AppDrawer from '@/components/AppDrawer/index.vue';
   import AppFooter from '@/components/AppFooter/index.vue';
   import AppHeader from '@/components/AppHeader/index.vue';
@@ -114,8 +114,8 @@
         <!-- === Results from OpenAI === -->
         <ResultDisplay />
 
-        <!-- === Google AdSense Type: In-feed === -->
-        <VRow no-gutters class="my-5">
+        <!-- === Advertisements === -->
+        <VRow no-gutters class="mt-10">
           <!-- Note: Both `mx-auto text-center` are needed for best placements when screen is resized -->
           <VCol
             class="mx-auto text-center"
@@ -123,11 +123,7 @@
             md="8"
             lg="6"
           >
-            <GoogleAdSense
-              adFormat="fluid"
-              adLayoutKey="-fb+5w+4e-db+86"
-              :adSlot="7471404401"
-            />
+            <Ads />
           </VCol>
         </VRow>
       </VContainer>
