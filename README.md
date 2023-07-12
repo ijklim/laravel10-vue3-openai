@@ -47,6 +47,37 @@ yarn dev
 
 * `.env::OPENAI_API_KEY` must be updated with a valid key from https://platform.openai.com, a free account can be created to generate a secret key
 
+## (Optional) Splitting the ads component into another repo and use it as submodule
+
+```sh
+# Create a new branch `vue-ads` based on the component folder to be extracted
+git subtree split --prefix=resources/js/components/ads -b vue-ads
+
+# Create a new directory as a remote server (this is like github) to place the new component and initialize git
+# e.g. ~/Documents/web/github/remote-vue-ads
+cd ~/Documents/web/github/remote-vue-ads
+git init --bare
+
+# Return to the original repo and push branch to new remote repo
+cd ~/Documents/web/laravel/laravel10-vue3-openai
+git push ~/Documents/web/github/remote-vue-ads vue-ads:master
+
+# Create repo from remote folder
+cd ~/Documents/web/github
+git clone ./remote-vue-ads vue-ads
+# Note: Now vue-ads contains the component files
+
+# Remove extracted files from original repo
+cd ~/Documents/web/laravel/laravel10-vue3-openai
+git rm -r resources/js/components/ads/
+git commit -m 'Delete extracted component'
+
+# Creat a github repo from the new component, then add it as a submodule in the current repo
+git submodule add https://github.com/ijklim/vue-ads.git resources/js/components/VueAds
+# Note: To remove submodule, use `git submodule deinit -f <submodule-path>`
+```
+
+
 ## Deployment on shared hosting
 * Copy all files from the `public` folder into `public_html__chatgpt` on the host
 * Copy all folders except `public`, `node_modules`, and `tests` into a new folder at the same level as `public_html__chatgpt`, e.g. `server__chatgpt`

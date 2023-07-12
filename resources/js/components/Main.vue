@@ -1,10 +1,10 @@
 <script setup>
-  import Ads from '@/components/ads/index.vue';
   import AppDrawer from '@/components/AppDrawer/index.vue';
   import AppFooter from '@/components/AppFooter/index.vue';
   import AppHeader from '@/components/AppHeader/index.vue';
   import ScreenBreakpoints from '@/components/Debug/ScreenBreakpoints.vue';
   import ResultDisplay from '@/components/ResultDisplay.vue';
+  import VueAdsRandom from '@/components/VueAds/Random.vue';
   import useInputHelper from '@/composables/useInputHelper.js';
   import useOpenAI from '@/composables/useOpenAI.js';
   import useProcessing from '@/composables/useProcessing.js';
@@ -123,7 +123,7 @@
             md="8"
             lg="6"
           >
-            <Ads />
+            <VueAdsRandom />
           </VCol>
         </VRow>
       </VContainer>
