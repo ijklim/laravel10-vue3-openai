@@ -4,7 +4,7 @@
   import GoogleAdSense from '@/components/ads/GoogleAdSense.vue';
 
   const numberOfAvailableAds = 3;
-  const whichAdToShow = ref(Math.round(Math.random() * numberOfAvailableAds));
+  const whichAdToShow = ref(Math.ceil(Math.random() * numberOfAvailableAds));
 </script>
 
 <template>

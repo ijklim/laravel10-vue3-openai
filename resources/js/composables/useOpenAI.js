@@ -27,7 +27,7 @@ const utility = useUtility(import.meta);
 const state = reactive({
   answersFromAI: [],
   form: {
-    roleAI: ROLE_AI_DEFAULT,
+    roleAI: null,
     imageSize: null,
     questionComplete: '',
   },
@@ -84,6 +84,31 @@ export default () => {
     return state.form.questionComplete.replaceAll(patternCharsToReplaceWithSpace, ' ');
   });
 
+  const cacheKeyRoleAI = `${utility.cacheKeyPrefix}__roleAI`;
+  /**
+   * Role required by OpenAI chat API
+   */
+  const roleAI = computed({
+    get() {
+      if (state.form.roleAI) {
+        return state.form.roleAI;
+      }
+
+      // Get active index from cache
+      const cachedRoleAI = cache.get(cacheKeyRoleAI, ROLE_AI_DEFAULT);
+      console.log(`[${utility.currentFileName}::computed::roleAI] cachedRoleAI`, cachedRoleAI);
+
+      // Note: Check to ensure the cached key is still valid
+      return cachedRoleAI ?? ROLE_AI_DEFAULT;
+    },
+    set(value) {
+      state.form.roleAI = value;
+      // Cache setting
+      cache.store(cacheKeyRoleAI, value);
+    },
+  });
+
+
   /**
    * Construct parameters based on different request type
    *
@@ -121,6 +146,7 @@ export default () => {
     // Should not happen, all types should be defined above
     return {};
   });
+
 
   // === Methods ===
   /**
@@ -190,6 +216,7 @@ export default () => {
   return {
     imageSize,
     questionFormatted,
+    roleAI,
     state,
     submitForm,
   };
