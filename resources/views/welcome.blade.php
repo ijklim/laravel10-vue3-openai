@@ -13,9 +13,6 @@
         <!-- === Icon Font used by Vuetify === -->
         <link href="https://cdn.jsdelivr.net/npm/@mdi/font@7.2.96/css/materialdesignicons.min.css" rel="stylesheet">
 
-        <!-- === Google AdSense ===  -->
-        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3117776653960390" crossorigin="anonymous"></script>
-
         @vite(['resources/js/app.js'])
     </head>
     <body>
