@@ -115,7 +115,7 @@
         <ResultDisplay />
 
         <!-- === Advertisements === -->
-        <VRow no-gutters class="mt-10">
+        <VRow no-gutters class="mt-10 mb-5">
           <!-- Note: Both `mx-auto text-center` are needed for best placements when screen is resized -->
           <VCol
             class="mx-auto text-center"
