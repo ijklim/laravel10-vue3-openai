@@ -3,13 +3,18 @@
   import useOpenAI from '@/composables/useOpenAI.js';
   import { FORM_INPUT_RULES } from '@/utilities/formInputRules.js';
 
+
+  // === Composables ===
   const openAI = useOpenAI();
 
+
+  // === Data ===
   const form = reactive({
     company: '',
     position: '',
     jobDescription: '',
   });
+
 
   // === Watcher ===
   watchEffect(() => {

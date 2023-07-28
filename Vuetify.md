@@ -12,6 +12,8 @@
 
 * Form: https://vuetifyjs.com/en/components/forms
 
+* Grids: https://vuetifyjs.com/en/components/grids/
+
 ## Example
 
 * Only display for certain breakpoint: `v-if="$vuetify.display.mdAndUp"`

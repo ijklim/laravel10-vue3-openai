@@ -1,4 +1,5 @@
 <script setup>
+  import { ref } from 'vue';
   import AppDrawer from '@/components/AppDrawer/index.vue';
   import AppFooter from '@/components/AppFooter/index.vue';
   import AppHeader from '@/components/AppHeader/index.vue';
@@ -16,6 +17,10 @@
   const openAI = useOpenAI();
   const processing = useProcessing();
   const userSelection = useUserSelection();
+
+
+  // === Data ===
+  const buttonSubmit = ref(null);
 </script>
 
 <template>
@@ -97,12 +102,14 @@
           <!-- === Input Helper Component === -->
           <component
             :is="userSelection.activeInputHelper.value.component"
+            @keyEnter="buttonSubmit.$el.click()"
           />
 
           <VBtn
             block
             class="mt-2"
             color="green-darken-3"
+            ref="buttonSubmit"
             type="submit"
             :disabled="processing.isEventProcessing()"
             :loading="processing.isEventProcessing()"
